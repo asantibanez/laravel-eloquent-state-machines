@@ -62,7 +62,7 @@ $salesOrder->status()->history()->get();
 
 ## Demo
 
-WIP
+Coming Soon 👍
 
 ## Installation
 
@@ -208,7 +208,8 @@ $salesOrder->status()->transitionTo($to = 'approved', $customProperties = [
 ``` 
 
 When applying the transition, the state machine will verify if the state transition is allowed according
-to the `transitions()` states we've defined. 
+to the `transitions()` states we've defined. If the transition is not allowed, a `TransitionNotAllowed`
+exception will be thrown.
 
 ### Querying History
 
@@ -273,11 +274,55 @@ $salesOrder->status()->snapshotWhen('approved')->getCustomProperty('comments');
 
 ### Adding Validations
 
-WIP 
+Before transitioning to a new state, we can add validations that will allow/disallow the transition. To
+do so, we can override the `validatorForTransition($from, $to, $model)` method in our state machine class.
+
+This method must return a `Validator` that will be used to check the transition before applying it. If
+the validator `fails()`, a `ValidationException` is thrown. Eg:
+
+```php
+class StatusStateMachine extends StateMachine
+{
+    public function validatorForTransition($from, $to, $model): ?Validator
+    {
+        if ($from === 'pending' && $to === 'approved') {
+            return ValidatorFacade::make([
+                'total' => $model->total,
+            ], [
+                'total' => 'gt:0',
+            ]);
+        }
+        
+        return parent:validatorForTransition($from, $to, $model);
+    }
+}
+```
+
+In the example above, we are validating that our Sales Order model total is greater than 0 before
+applying the transition. 
 
 ### Adding Hooks 
 
-WIP
+We can also add custom hooks/callbacks that will be executed once a transition is applied. 
+To do so, we must override the `transitionHooks()` method in our state machine.
+
+The `transitionHooks()` method must return an keyed array with the state and the callback/closure
+to be executed. Eg. 
+
+```php
+class StatusStateMachine extends StateMachine
+{
+    public function transitionHooks(): array
+    {
+        return [
+            'processed' => function ($from, $model) {
+                // Add any further processing, eg
+                // Dispatch jobs, events, send mails, etc.
+            },
+        ];
+    } 
+}
+```
 
 ### Testing
 
