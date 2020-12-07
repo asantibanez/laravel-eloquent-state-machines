@@ -60,6 +60,10 @@ $salesOrder->fulfillment()->snapshowWhen('completed');
 $salesOrder->status()->history()->get();
 ```
 
+## Demo
+
+WIP
+
 ## Installation
 
 You can install the package via composer:
@@ -168,13 +172,104 @@ class SalesOrder extends Model
 }
 ```
 
-### Transitioning State
+### State Machine Methods  
 
-WIP
+When registering `$stateMachines` in our model, each state field will have it's own custom method to
+interact with the state machine and transitioning methods. The `HasStateMachines` trait defines
+one method per each field mapped in `$stateMachines`. Eg. 
+
+For
+```php 
+'status' => StatusStateMachine::class
+```
+
+We will have an accompanying method 
+```php
+status()
+```
+
+with which we can use to check our current state, history and apply transitions. 
+
+> Note: the field "status" will be kept intact and in sync with the state machine
+
+### Transitioning States
+
+To transition from one state to another, we can use the `transitionTo` method. Eg:
+
+```php
+$salesOrder->status()->transitionTo($to = 'approved');
+```
+
+You can also pass in `$customProperties` if needed
+```php
+$salesOrder->status()->transitionTo($to = 'approved', $customProperties = [
+    'comments' => 'All ready to go'
+]);
+``` 
+
+When applying the transition, the state machine will verify if the state transition is allowed according
+to the `transitions()` states we've defined. 
 
 ### Querying History
 
-WIP
+If `recordHistory()` is set to `true` in our State Machine, each state transition will be recorded in
+the package `StateHistory` model using the `state_histories` table that was exported when installing the
+package.
+
+With `recordHistory()` turned on, we can query the history of states our field has transitioned to. Eg:
+
+```php
+$salesOrder->status()->was('approved'); // true or false
+
+$salesOrder->status()->timesWas('approved'); // int 
+
+$salesOrder->status()->whenWas('approved'); // ?Carbon
+``` 
+
+As seen above, we can check whether or not our field has transitioned to one of the queried states.
+
+We can also get the latest snapshot or all snapshots for a given state   
+
+```php
+$salesOrder->status()->snapshotWhen('approved');
+
+$salesOrder->status()->snapshotsWhen('approved');
+```
+
+The full history of transitioned states is also available 
+
+```php
+$salesOrder->status()->history()->get();
+``` 
+
+The `history()` method returns an Eloquent relationship that can be chained with the following
+scopes to further down the results.
+
+```php
+$salesOrder->status()->history()
+    ->from('pending')
+    ->to('approved')
+    ->withCustomProperty('comments', 'like', '%good%')
+    ->get();
+``` 
+
+### Getting Custom Properties
+
+When applying transitions with custom properties, we can get our registered values using the
+`getCustomProperty($key)` method. Eg.
+
+```php
+$salesOrder->status()->getCustomProperty('comments');
+```
+
+This method will reach for the custom properties of the current state. You can get custom 
+properties of previous states using the snapshotWhen($state) method.
+
+```php
+$salesOrder->status()->snapshotWhen('approved')->getCustomProperty('comments');
+```
+
+## Advanced Usage
 
 ### Adding Validations
 
