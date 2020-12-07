@@ -66,6 +66,13 @@ abstract class StateMachine
         return collect($availableTransitions)->contains($to);
     }
 
+    /**
+     * @param $from
+     * @param $to
+     * @param array $customProperties
+     * @throws TransitionNotAllowedException
+     * @throws ValidationException
+     */
     public function transitionTo($from, $to, $customProperties = [])
     {
         if (!$this->canBe($from, $to)) {
@@ -78,16 +85,14 @@ abstract class StateMachine
         }
 
         $field = $this->field;
-
         $this->model->$field = $to;
-
         $this->model->save();
 
         if ($this->recordHistory()) {
             $this->model->recordState($field, $from, $to, $customProperties);
         }
 
-        $transitionHooks = data_get($this->transitionHooks(), $to, []);
+        $transitionHooks = $this->transitionHooks()[$to] ?? [];
 
         collect($transitionHooks)
             ->each(function ($callable) use ($from) {

@@ -1,11 +1,6 @@
-# Very short description of the package
+# Laravel Eloquent State Machines
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/asantibanez/laravel-eloquent-state-machines)
-[![Build Status](https://img.shields.io/travis/asantibanez/laravel-eloquent-state-machines/master.svg?style=flat-square)](https://travis-ci.org/asantibanez/laravel-eloquent-state-machines)
-[![Quality Score](https://img.shields.io/scrutinizer/g/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://scrutinizer-ci.com/g/asantibanez/laravel-eloquent-state-machines)
-[![Total Downloads](https://img.shields.io/packagist/dt/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/asantibanez/laravel-eloquent-state-machines)
-
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+State machines for your Laravel Eloquent models
 
 ## Installation
 
@@ -15,11 +10,16 @@ You can install the package via composer:
 composer require asantibanez/laravel-eloquent-state-machines
 ```
 
+Next, you must export the package migrations
+
+```bash
+php artisan vendor:publish --provider="Asantibanez\LaravelEloquentStateMachines\LaravelEloquentStateMachinesServiceProvider" --tag="migrations"
+```
+
+
 ## Usage
 
-``` php
-// Usage description here
-```
+WIP
 
 ### Testing
 
@@ -47,7 +47,3 @@ If you discover any security related issues, please email santibanez.andres@gmai
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-## Laravel Package Boilerplate
-
-This package was generated using the [Laravel Package Boilerplate](https://laravelpackageboilerplate.com).
