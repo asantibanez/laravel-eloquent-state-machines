@@ -47,6 +47,11 @@ class State
         return $this->stateMachine->timesWas($state);
     }
 
+    public function whenWas($state)
+    {
+        return $this->stateMachine->whenWas($state);
+    }
+
     public function snapshotWhen($state)
     {
         return $this->stateMachine->snapshotWhen($state);

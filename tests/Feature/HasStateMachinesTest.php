@@ -13,7 +13,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use Queue;
 
-class HasStateMachineTest extends TestCase
+class HasStateMachinesTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -210,6 +210,9 @@ class HasStateMachineTest extends TestCase
 
         $this->assertEquals(1, $salesOrder->status()->timesWas('approved'));
         $this->assertEquals(1, $salesOrder->status()->timesWas('processed'));
+
+        $this->assertNotNull($salesOrder->status()->whenWas('approved'));
+        $this->assertNotNull($salesOrder->status()->whenWas('processed'));
 
         $this->assertFalse($salesOrder->status()->was('another_status'));
         $this->assertEquals(0, $salesOrder->status()->was('another_status'));

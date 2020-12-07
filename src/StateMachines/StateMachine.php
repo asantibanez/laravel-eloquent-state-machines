@@ -5,7 +5,10 @@ namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
 
 
 use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
+use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
+use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
 abstract class StateMachine
@@ -36,7 +39,18 @@ abstract class StateMachine
             ->count();
     }
 
-    public function snapshotWhen($state)
+    public function whenWas($state) : ?Carbon
+    {
+        $stateHistory = $this->snapshotWhen($state);
+
+        if ($stateHistory === null) {
+            return null;
+        }
+
+        return $stateHistory->created_at;
+    }
+
+    public function snapshotWhen($state) : ?StateHistory
     {
         return $this->model->stateHistory()
             ->forField($this->field)
@@ -45,7 +59,7 @@ abstract class StateMachine
             ->first();
     }
 
-    public function snapshotsWhen($state)
+    public function snapshotsWhen($state) : Collection
     {
         return $this->model->stateHistory()
             ->forField($this->field)
