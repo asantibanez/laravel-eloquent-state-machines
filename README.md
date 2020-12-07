@@ -62,7 +62,9 @@ $salesOrder->status()->history()->get();
 
 ## Demo
 
-Coming Soon 👍
+You can check a demo and examples [here](https://github.com/asantibanez/laravel-eloquent-state-machines-demo)
+
+![demo](https://github.com/asantibanez/laravel-eloquent-state-machines/raw/master/demo.gif)
 
 ## Installation
 
