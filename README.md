@@ -20,8 +20,9 @@ feel right at home.
 Model with two status fields
 
 ```php
-$salesOrder->status // 'pending', 'approved', 'declined' or 'processed'
-$salesOrder->fulfillment // null, 'pending', 'completed'
+$salesOrder->status; // 'pending', 'approved', 'declined' or 'processed'
+
+$salesOrder->fulfillment; // null, 'pending', 'completed'
 ```
 
 Transitioning from one state to another
@@ -49,7 +50,9 @@ Checking transitions history
   
 ```php
 $salesOrder->status()->was('approved');
+
 $salesOrder->status()->timesWas('approved');
+
 $salesOrder->status()->whenWas('approved');
 
 $salesOrder->fulfillment()->snapshowWhen('completed');
