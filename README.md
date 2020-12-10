@@ -1,4 +1,5 @@
-[![GitHub release](https://img.shields.io/github/release/asantibanez/laravel-eloquent-state-machines.svg)](https://github.com/asantibanez/laravel-eloquent-state-machines/releases/)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/asantibanez/laravel-eloquent-state-machines)
+[![Total Downloads](https://img.shields.io/packagist/dt/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/asantibanez/laravel-eloquent-state-machines)
 
 ![Laravel Eloquent State Machines](https://banners.beyondco.de/Laravel%20Eloquent%20State%20Machines.png?theme=light&packageManager=composer+require&packageName=asantibanez%2Flaravel-eloquent-state-machines&pattern=circuitBoard&style=style_1&description=State+machines+for+your+Laravel+Eloquent+models+in+no+time&md=1&showWatermark=1&fontSize=100px&images=collection)
 
