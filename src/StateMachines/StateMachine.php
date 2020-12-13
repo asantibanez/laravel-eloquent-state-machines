@@ -123,11 +123,18 @@ abstract class StateMachine
             ->each(function ($callable) use ($from) {
                 $callable($from, $this->model);
             });
+
+        $this->cancelAllPendingTransitions();
     }
 
     public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [])
     {
         $this->model->recordPendingTransition($this->field, $from, $to, $when, $customProperties);
+    }
+
+    public function cancelAllPendingTransitions()
+    {
+        $this->model->pendingTransitions()->delete();
     }
 
     abstract public function transitions() : array;

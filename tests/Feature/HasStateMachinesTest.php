@@ -259,4 +259,26 @@ class HasStateMachinesTest extends TestCase
 
         $this->assertEquals($salesOrder->id, $pendingTransition->model->id);
     }
+
+    /** @test */
+    public function should_cancel_all_pending_transitions_when_transitioning_to_next_state()
+    {
+        //Arrange
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        factory(PendingTransition::class)->times(10)->create([
+            'model_id' => $salesOrder->id,
+            'model_type' => SalesOrder::class,
+        ]);
+
+        $this->assertTrue($salesOrder->status()->hasPendingTransitions());
+
+        //Act
+        $salesOrder->status()->transitionTo('approved');
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertFalse($salesOrder->status()->hasPendingTransitions());
+    }
 }

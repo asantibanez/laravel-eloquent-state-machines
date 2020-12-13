@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $transition_at
  * @property Carbon $applied_at
  * @property string $custom_properties
+ * @property int $model_id
+ * @property string $model_type
  * @property Model $model
  */
 class PendingTransition extends Model
