@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use Queue;
+use Throwable;
 
 class HasStateMachinesTest extends TestCase
 {
@@ -105,7 +106,7 @@ class HasStateMachinesTest extends TestCase
         try {
             $salesOrder->status()->transitionTo('pending');
             $this->fail('Should have thrown exception');
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             //Assert
             $this->assertTrue($throwable instanceof TransitionNotAllowedException);
         }
@@ -127,7 +128,7 @@ class HasStateMachinesTest extends TestCase
         try {
             $salesOrder->fulfillment()->transitionTo('pending');
             $this->fail('Should have thrown exception');
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             // Assert
             $this->assertTrue($throwable instanceof ValidationException);
         }
@@ -289,5 +290,21 @@ class HasStateMachinesTest extends TestCase
 
         $this->assertFalse($salesOrder->status()->hasPendingTransitions());
         $this->assertTrue($salesOrder->fulfillment()->hasPendingTransitions());
+    }
+
+    /** @test */
+    public function should_throw_exception_for_invalid_state_on_postponed_transition()
+    {
+        //Arrange
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        //Act
+        try {
+            $salesOrder->status()->postponeTransitionTo('invalid', Carbon::tomorrow());
+            $this->fail('Should have thrown exception');
+        } catch (Throwable $exception) {
+            //Assert
+            $this->assertTrue($exception instanceof TransitionNotAllowedException);
+        }
     }
 }

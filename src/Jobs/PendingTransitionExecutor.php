@@ -27,7 +27,8 @@ class PendingTransitionExecutor implements ShouldQueue
         $field = $this->pendingTransition->field;
         $model = $this->pendingTransition->model;
         $to = $this->pendingTransition->to;
+        $customProperties = $this->pendingTransition->custom_properties;
 
-        $model->$field()->transitionTo($to);
+        $model->$field()->transitionTo($to, $customProperties);
     }
 }

@@ -119,9 +119,14 @@ abstract class StateMachine
      * @param Carbon $when
      * @param array $customProperties
      * @return PendingTransition
+     * @throws TransitionNotAllowedException
      */
     public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = []) : PendingTransition
     {
+        if (!$this->canBe($from, $to)) {
+            throw new TransitionNotAllowedException();
+        }
+
         return $this->model->recordPendingTransition($this->field, $from, $to, $when, $customProperties);
     }
 
