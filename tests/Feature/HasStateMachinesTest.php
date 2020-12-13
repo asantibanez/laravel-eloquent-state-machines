@@ -151,6 +151,46 @@ class HasStateMachinesTest extends TestCase
     }
 
     /** @test */
+    public function should_record_history_when_creating_model()
+    {
+        //Arrange
+        $dummySalesOrder = new SalesOrder();
+
+        $stateMachine = new StatusStateMachine('status', $dummySalesOrder);
+
+        $this->assertTrue($stateMachine->recordHistory());
+
+        //Act
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertEquals(1, $salesOrder->status()->history()->count());
+    }
+
+    /** @test */
+    public function should_not_record_history_when_creating_model_if_record_history_turned_off()
+    {
+        //Arrange
+        $dummySalesOrder = new SalesOrder();
+
+        $stateMachine = new FulfillmentStateMachine('fulfillment', $dummySalesOrder);
+
+        $this->assertFalse($stateMachine->recordHistory());
+
+        //Act
+        $salesOrder = factory(SalesOrder::class)->create([
+            'fulfillment' => 'pending',
+        ]);
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertEquals(0, $salesOrder->fulfillment()->history()->count());
+    }
+
+    /** @test */
     public function can_record_history_with_custom_properties_when_transitioning_to_next_state()
     {
         //Arrange
