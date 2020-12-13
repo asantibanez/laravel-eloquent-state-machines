@@ -266,12 +266,20 @@ class HasStateMachinesTest extends TestCase
         //Arrange
         $salesOrder = factory(SalesOrder::class)->create();
 
-        factory(PendingTransition::class)->times(10)->create([
+        factory(PendingTransition::class)->times(5)->create([
+            'field' => 'status',
+            'model_id' => $salesOrder->id,
+            'model_type' => SalesOrder::class,
+        ]);
+
+        factory(PendingTransition::class)->times(5)->create([
+            'field' => 'fulfillment',
             'model_id' => $salesOrder->id,
             'model_type' => SalesOrder::class,
         ]);
 
         $this->assertTrue($salesOrder->status()->hasPendingTransitions());
+        $this->assertTrue($salesOrder->fulfillment()->hasPendingTransitions());
 
         //Act
         $salesOrder->status()->transitionTo('approved');
@@ -280,5 +288,6 @@ class HasStateMachinesTest extends TestCase
         $salesOrder->refresh();
 
         $this->assertFalse($salesOrder->status()->hasPendingTransitions());
+        $this->assertTrue($salesOrder->fulfillment()->hasPendingTransitions());
     }
 }

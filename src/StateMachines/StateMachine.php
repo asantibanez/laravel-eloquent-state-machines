@@ -82,13 +82,12 @@ abstract class StateMachine
 
     public function pendingTransitions()
     {
-        return $this->model->pendingTransitions()
-            ->forField($this->field);
+        return $this->model->pendingTransitions()->forField($this->field);
     }
 
     public function hasPendingTransitions()
     {
-        return $this->model->pendingTransitions()->notApplied()->exists();
+        return $this->pendingTransitions()->notApplied()->exists();
     }
 
     /**
@@ -134,7 +133,7 @@ abstract class StateMachine
 
     public function cancelAllPendingTransitions()
     {
-        $this->model->pendingTransitions()->delete();
+        $this->pendingTransitions()->delete();
     }
 
     abstract public function transitions() : array;
