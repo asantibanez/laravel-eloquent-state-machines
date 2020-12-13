@@ -80,6 +80,17 @@ abstract class StateMachine
         return collect($availableTransitions)->contains($to);
     }
 
+    public function pendingTransitions()
+    {
+        return $this->model->pendingTransitions()
+            ->forField($this->field);
+    }
+
+    public function hasPendingTransitions()
+    {
+        return $this->model->pendingTransitions()->notApplied()->exists();
+    }
+
     /**
      * @param $from
      * @param $to
@@ -114,11 +125,16 @@ abstract class StateMachine
             });
     }
 
-    abstract public function recordHistory() : bool;
+    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [])
+    {
+        $this->model->recordPendingTransition($this->field, $from, $to, $when, $customProperties);
+    }
 
     abstract public function transitions() : array;
 
     abstract public function defaultState() : ?string;
+
+    abstract public function recordHistory() : bool;
 
     public function validatorForTransition($from, $to, $model): ?Validator
     {

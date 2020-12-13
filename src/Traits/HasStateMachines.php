@@ -2,6 +2,7 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\Traits;
 
+use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\State;
 use Illuminate\Database\Eloquent\Model;
@@ -61,6 +62,11 @@ trait HasStateMachines
         return $this->morphMany(StateHistory::class, 'model');
     }
 
+    public function pendingTransitions()
+    {
+        return $this->morphMany(PendingTransition::class, 'model');
+    }
+
     public function recordState($field, $from, $to, $customProperties = [])
     {
         $this->stateHistory()->save(
@@ -69,6 +75,19 @@ trait HasStateMachines
                 'from' => $from,
                 'to' => $to,
                 'custom_properties' => $customProperties,
+            ])
+        );
+    }
+
+    public function recordPendingTransition($field, $from, $to, $when, $customProperties = [])
+    {
+        $this->pendingTransitions()->save(
+            PendingTransition::make([
+                'field' => $field,
+                'from' => $from,
+                'to' => $to,
+                'transition_at' => $when,
+                'custom_properties' => $customProperties
             ])
         );
     }

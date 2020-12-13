@@ -4,6 +4,7 @@
 namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
 
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
+use Carbon\Carbon;
 
 /**
  * Class State
@@ -72,9 +73,29 @@ class State
         return $this->stateMachine->canBe($from = $this->state, $to = $state);
     }
 
+    public function pendingTransitions()
+    {
+        return $this->stateMachine->pendingTransitions();
+    }
+
+    public function hasPendingTransitions()
+    {
+        return $this->stateMachine->hasPendingTransitions();
+    }
+
     public function transitionTo($state, $customProperties = [])
     {
         $this->stateMachine->transitionTo($from = $this->state, $to = $state, $customProperties);
+    }
+
+    public function postponeTransitionTo($state, Carbon $when, $customProperties = [])
+    {
+        $this->stateMachine->postponeTransitionTo(
+            $from = $this->state,
+            $to = $state,
+            $when,
+            $customProperties
+        );
     }
 
     public function latest() : ?StateHistory

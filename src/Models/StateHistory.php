@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class StateHistory
  * @package Asantibanez\LaravelEloquentStateMachines\Models
- * @property string $transition
+ * @property string $field
  * @property string $from
  * @property string $to
  * @property string $custom_properties
