@@ -33,11 +33,14 @@ trait HasStateMachines
         self::created(function (Model $model) {
             collect($model->stateMachines)
                 ->each(function ($_, $field) use ($model) {
-                    $stateMachine = $model->{$field}()->stateMachine();
-                    $defaultState = $stateMachine->defaultState();
-                    $currentState = $model->{$field};
+                    $currentState = $model->$field;
+                    $stateMachine = $model->$field()->stateMachine();
 
-                    if ($defaultState === null) {
+                    if ($currentState === null) {
+                        return;
+                    }
+
+                    if (!$stateMachine->recordHistory()) {
                         return;
                     }
 
