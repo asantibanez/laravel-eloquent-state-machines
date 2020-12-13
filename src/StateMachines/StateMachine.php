@@ -23,20 +23,19 @@ abstract class StateMachine
         $this->model = $model;
     }
 
+    public function history()
+    {
+        return $this->model->stateHistory()->forField($this->field);
+    }
+
     public function was($state)
     {
-        return $this->model->stateHistory()
-            ->forField($this->field)
-            ->to($state)
-            ->exists();
+        return $this->history()->to($state)->exists();
     }
 
     public function timesWas($state)
     {
-        return $this->model->stateHistory()
-            ->forField($this->field)
-            ->to($state)
-            ->count();
+        return $this->history()->to($state)->count();
     }
 
     public function whenWas($state) : ?Carbon
@@ -52,25 +51,12 @@ abstract class StateMachine
 
     public function snapshotWhen($state) : ?StateHistory
     {
-        return $this->model->stateHistory()
-            ->forField($this->field)
-            ->to($state)
-            ->latest('id')
-            ->first();
+        return $this->history()->to($state)->latest('id')->first();
     }
 
     public function snapshotsWhen($state) : Collection
     {
-        return $this->model->stateHistory()
-            ->forField($this->field)
-            ->to($state)
-            ->get();
-    }
-
-    public function history()
-    {
-        return $this->model->stateHistory()
-            ->forField($this->field);
+        return $this->history()->to($state)->get();
     }
 
     public function canBe($from, $to)

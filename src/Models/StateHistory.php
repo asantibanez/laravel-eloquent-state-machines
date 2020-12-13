@@ -2,6 +2,7 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $from
  * @property string $to
  * @property string $custom_properties
+ * @property Carbon $created_at
  */
 class StateHistory extends Model
 {
