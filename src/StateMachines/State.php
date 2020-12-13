@@ -3,6 +3,7 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
 
+use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Carbon\Carbon;
 
@@ -36,6 +37,11 @@ class State
     public function is($state)
     {
         return $this->state === $state;
+    }
+
+    public function isNot($state)
+    {
+        return !$this->is($state);
     }
 
     public function was($state)
@@ -88,9 +94,9 @@ class State
         $this->stateMachine->transitionTo($from = $this->state, $to = $state, $customProperties);
     }
 
-    public function postponeTransitionTo($state, Carbon $when, $customProperties = [])
+    public function postponeTransitionTo($state, Carbon $when, $customProperties = []) : PendingTransition
     {
-        $this->stateMachine->postponeTransitionTo(
+        return $this->stateMachine->postponeTransitionTo(
             $from = $this->state,
             $to = $state,
             $when,

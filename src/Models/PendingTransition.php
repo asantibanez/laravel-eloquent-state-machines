@@ -41,6 +41,11 @@ class PendingTransition extends Model
         $query->whereNull('applied_at');
     }
 
+    public function scopeOnScheduleOrOverdue($query)
+    {
+        $query->where('transition_at', '<=', now());
+    }
+
     public function scopeForField($query, $field)
     {
         $query->where('field', $field);

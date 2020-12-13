@@ -79,9 +79,9 @@ trait HasStateMachines
         );
     }
 
-    public function recordPendingTransition($field, $from, $to, $when, $customProperties = [])
+    public function recordPendingTransition($field, $from, $to, $when, $customProperties = []) : PendingTransition
     {
-        $this->pendingTransitions()->save(
+        return $this->pendingTransitions()->save(
             PendingTransition::make([
                 'field' => $field,
                 'from' => $from,

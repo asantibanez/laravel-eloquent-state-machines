@@ -5,6 +5,7 @@ namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
 
 
 use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
+use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
@@ -112,9 +113,16 @@ abstract class StateMachine
         $this->cancelAllPendingTransitions();
     }
 
-    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [])
+    /**
+     * @param $from
+     * @param $to
+     * @param Carbon $when
+     * @param array $customProperties
+     * @return PendingTransition
+     */
+    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = []) : PendingTransition
     {
-        $this->model->recordPendingTransition($this->field, $from, $to, $when, $customProperties);
+        return $this->model->recordPendingTransition($this->field, $from, $to, $when, $customProperties);
     }
 
     public function cancelAllPendingTransitions()
