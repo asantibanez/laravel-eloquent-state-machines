@@ -3,8 +3,10 @@
 namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
 
 use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
+use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\StartSalesOrderFulfillmentJob;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
+use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesManager;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrder;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders\FulfillmentStateMachine;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders\StatusStateMachine;
@@ -73,6 +75,52 @@ class HasStateMachinesTest extends TestCase
         $this->assertTrue($salesOrder->status()->is('approved'));
 
         $this->assertEquals('approved', $salesOrder->status);
+    }
+
+    /** @test */
+    public function should_register_responsible_for_transition_when_specified()
+    {
+        //Arrange
+        $salesManager = factory(SalesManager::class)->create();
+
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        //Act
+        $salesOrder->status()->transitionTo('approved', [], $salesManager);
+
+        //Assert
+        $salesOrder->refresh();
+
+        $responsible = $salesOrder->status()->responsible();
+
+        $this->assertEquals($salesManager->id, $responsible->id);
+        $this->assertEquals(SalesManager::class, get_class($responsible));
+
+        $responsible = $salesOrder->status()->snapshotWhen('approved')->responsible;
+        $this->assertEquals($salesManager->id, $responsible->id);
+        $this->assertEquals(SalesManager::class, get_class($responsible));
+    }
+
+    /** @test */
+    public function should_register_auth_as_responsible_for_transition_when_available()
+    {
+        //Arrange
+        $salesManager = factory(SalesManager::class)->create();
+
+        $this->actingAs($salesManager);
+
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        //Act
+        $salesOrder->status()->transitionTo('approved');
+
+        //Assert
+        $salesOrder->refresh();
+
+        $responsible = $salesOrder->status()->responsible();
+
+        $this->assertEquals($salesManager->id, $responsible->id);
+        $this->assertEquals(SalesManager::class, get_class($responsible));
     }
 
     /** @test */
