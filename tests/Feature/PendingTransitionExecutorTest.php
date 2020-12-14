@@ -2,14 +2,14 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
 
-use Asantibanez\LaravelEloquentStateMachines\Exceptions\InvalidStartingStateException;
 use Asantibanez\LaravelEloquentStateMachines\Jobs\PendingTransitionExecutor;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Throwable;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Support\Facades\Queue;
 
 class PendingTransitionExecutorTest extends TestCase
 {
@@ -28,6 +28,10 @@ class PendingTransitionExecutorTest extends TestCase
 
         $this->assertTrue($salesOrder->status()->hasPendingTransitions());
 
+        Queue::after(function (JobProcessed $event) {
+            $this->assertFalse($event->job->hasFailed());
+        });
+
         //Act
         $pendingTransition = $salesOrder->status()->pendingTransitions()->first();
 
@@ -42,7 +46,7 @@ class PendingTransitionExecutorTest extends TestCase
     }
 
     /** @test */
-    public function should_throw_exception_if_starting_transition_is_not_the_same_as_when_postponed()
+    public function should_fail_job_automatically_if_starting_transition_is_not_the_same_as_when_postponed()
     {
         //Arrange
         $salesOrder = factory(SalesOrder::class)->create();
@@ -55,15 +59,13 @@ class PendingTransitionExecutorTest extends TestCase
 
         $this->assertTrue($salesOrder->status()->hasPendingTransitions());
 
+        Queue::after(function (JobProcessed $event) {
+            $this->assertTrue($event->job->hasFailed());
+        });
+
         //Act
         $pendingTransition = $salesOrder->status()->pendingTransitions()->first();
 
-        try {
-            PendingTransitionExecutor::dispatch($pendingTransition);
-            $this->fail('Should have thrown exception');
-        } catch (Throwable $exception) {
-            //Assert
-            $this->assertTrue($exception instanceof InvalidStartingStateException);
-        }
+        PendingTransitionExecutor::dispatch($pendingTransition);
     }
 }

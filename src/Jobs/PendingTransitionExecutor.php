@@ -35,7 +35,13 @@ class PendingTransitionExecutor implements ShouldQueue
         $customProperties = $this->pendingTransition->custom_properties;
 
         if ($model->$field()->isNot($from)) {
-            throw new InvalidStartingStateException();
+            $exception = new InvalidStartingStateException(
+                $expectedState = $from,
+                $actualState = $model->$field()->state()
+            );
+
+            $this->fail($exception);
+            return;
         }
 
         $model->$field()->transitionTo($to, $customProperties);
