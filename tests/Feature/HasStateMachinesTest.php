@@ -76,6 +76,27 @@ class HasStateMachinesTest extends TestCase
     }
 
     /** @test */
+    public function should_not_do_anything_when_transitioning_to_same_state()
+    {
+        //Arrange
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        $this->assertTrue($salesOrder->status()->is('pending'));
+
+        $this->assertEquals(1, $salesOrder->status()->history()->count());
+
+        //Act
+        $salesOrder->status()->transitionTo('pending');
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertTrue($salesOrder->status()->is('pending'));
+
+        $this->assertEquals(1, $salesOrder->status()->history()->count());
+    }
+
+    /** @test */
     public function can_check_next_possible_transitions()
     {
         //Arrange
