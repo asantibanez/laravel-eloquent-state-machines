@@ -3,7 +3,10 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
 
+use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
+use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
+use Carbon\Carbon;
 
 /**
  * Class State
@@ -35,6 +38,11 @@ class State
     public function is($state)
     {
         return $this->state === $state;
+    }
+
+    public function isNot($state)
+    {
+        return !$this->is($state);
     }
 
     public function was($state)
@@ -72,11 +80,40 @@ class State
         return $this->stateMachine->canBe($from = $this->state, $to = $state);
     }
 
+    public function pendingTransitions()
+    {
+        return $this->stateMachine->pendingTransitions();
+    }
+
+    public function hasPendingTransitions()
+    {
+        return $this->stateMachine->hasPendingTransitions();
+    }
+
     public function transitionTo($state, $customProperties = [], $responsible = null)
     {
         $this->stateMachine->transitionTo(
             $from = $this->state,
             $to = $state,
+            $customProperties,
+            $responsible
+        );
+    }
+
+    /**
+     * @param $state
+     * @param Carbon $when
+     * @param array $customProperties
+     * @param null $responsible
+     * @return null|PendingTransition
+     * @throws TransitionNotAllowedException
+     */
+    public function postponeTransitionTo($state, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
+    {
+        return $this->stateMachine->postponeTransitionTo(
+            $from = $this->state,
+            $to = $state,
+            $when,
             $customProperties,
             $responsible
         );

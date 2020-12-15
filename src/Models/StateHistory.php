@@ -2,19 +2,20 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User;
 
 /**
  * Class StateHistory
  * @package Asantibanez\LaravelEloquentStateMachines\Models
- * @property string $transition
+ * @property string $field
  * @property string $from
  * @property string $to
  * @property string $custom_properties
  * @property int $responsible_id
  * @property string $responsible_type
  * @property mixed $responsible
+ * @property Carbon $created_at
  */
 class StateHistory extends Model
 {
