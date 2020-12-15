@@ -3,6 +3,7 @@
 namespace Asantibanez\LaravelEloquentStateMachines\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 
 /**
  * Class StateHistory
@@ -11,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $from
  * @property string $to
  * @property string $custom_properties
+ * @property int $responsible_id
+ * @property string $responsible_type
+ * @property mixed $responsible
  */
 class StateHistory extends Model
 {
@@ -23,6 +27,11 @@ class StateHistory extends Model
     public function getCustomProperty($key)
     {
         return data_get($this->custom_properties, $key, null);
+    }
+
+    public function responsible()
+    {
+        return $this->morphTo();
     }
 
     public function allCustomProperties()

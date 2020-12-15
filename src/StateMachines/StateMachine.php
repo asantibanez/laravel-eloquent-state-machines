@@ -91,10 +91,11 @@ abstract class StateMachine
      * @param $from
      * @param $to
      * @param array $customProperties
+     * @param null|mixed $responsible
      * @throws TransitionNotAllowedException
      * @throws ValidationException
      */
-    public function transitionTo($from, $to, $customProperties = [])
+    public function transitionTo($from, $to, $customProperties = [], $responsible = null)
     {
         if ($to === $this->currentState()) {
             return;
@@ -114,7 +115,9 @@ abstract class StateMachine
         $this->model->save();
 
         if ($this->recordHistory()) {
-            $this->model->recordState($field, $from, $to, $customProperties);
+            $responsible = $responsible ?? auth()->user();
+
+            $this->model->recordState($field, $from, $to, $customProperties, $responsible);
         }
 
         $transitionHooks = $this->transitionHooks()[$to] ?? [];
