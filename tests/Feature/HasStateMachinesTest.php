@@ -344,7 +344,7 @@ class HasStateMachinesTest extends TestCase
 
         $responsible = $salesManager;
 
-        $salesOrder->status()->postponeTransitionTo(
+        $pendingTransition = $salesOrder->status()->postponeTransitionTo(
             'approved',
             Carbon::tomorrow()->startOfDay(),
             $customProperties,
@@ -352,6 +352,8 @@ class HasStateMachinesTest extends TestCase
         );
 
         //Assert
+        $this->assertNotNull($pendingTransition);
+
         $salesOrder->refresh();
 
         $this->assertTrue($salesOrder->status()->is('pending'));
@@ -374,6 +376,24 @@ class HasStateMachinesTest extends TestCase
         $this->assertEquals($salesOrder->id, $pendingTransition->model->id);
 
         $this->assertEquals($salesManager->id, $pendingTransition->responsible->id);
+    }
+
+    /** @test */
+    public function should_not_record_pending_transition_for_same_state()
+    {
+        //Arrange
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        $this->assertTrue($salesOrder->status()->is('pending'));
+
+        //Act
+        $pendingTransition = $salesOrder->status()->postponeTransitionTo(
+            'pending',
+            Carbon::tomorrow()->startOfDay()
+        );
+
+        //Assert
+        $this->assertNull($pendingTransition);
     }
 
     /** @test */
