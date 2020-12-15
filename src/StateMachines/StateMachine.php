@@ -23,6 +23,13 @@ abstract class StateMachine
         $this->model = $model;
     }
 
+    public function currentState()
+    {
+        $field = $this->field;
+
+        return $this->model->$field;
+    }
+
     public function was($state)
     {
         return $this->model->stateHistory()
@@ -90,6 +97,10 @@ abstract class StateMachine
      */
     public function transitionTo($from, $to, $customProperties = [], $responsible = null)
     {
+        if ($to === $this->currentState()) {
+            return;
+        }
+
         if (!$this->canBe($from, $to)) {
             throw new TransitionNotAllowedException();
         }
