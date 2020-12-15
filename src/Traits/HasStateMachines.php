@@ -70,16 +70,20 @@ trait HasStateMachines
         return $this->morphMany(PendingTransition::class, 'model');
     }
 
-    public function recordState($field, $from, $to, $customProperties = [])
+    public function recordState($field, $from, $to, $customProperties = [], $responsible = null)
     {
-        $this->stateHistory()->save(
-            StateHistory::make([
-                'field' => $field,
-                'from' => $from,
-                'to' => $to,
-                'custom_properties' => $customProperties,
-            ])
-        );
+        $stateHistory = StateHistory::make([
+            'field' => $field,
+            'from' => $from,
+            'to' => $to,
+            'custom_properties' => $customProperties,
+        ]);
+
+        if ($responsible !== null) {
+            $stateHistory->responsible()->associate($responsible);
+        }
+
+        $this->stateHistory()->save($stateHistory);
     }
 
     public function recordPendingTransition($field, $from, $to, $when, $customProperties = []) : PendingTransition

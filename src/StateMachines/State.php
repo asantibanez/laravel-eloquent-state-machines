@@ -89,9 +89,14 @@ class State
         return $this->stateMachine->hasPendingTransitions();
     }
 
-    public function transitionTo($state, $customProperties = [])
+    public function transitionTo($state, $customProperties = [], $responsible = null)
     {
-        $this->stateMachine->transitionTo($from = $this->state, $to = $state, $customProperties);
+        $this->stateMachine->transitionTo(
+            $from = $this->state,
+            $to = $state,
+            $customProperties,
+            $responsible
+        );
     }
 
     public function postponeTransitionTo($state, Carbon $when, $customProperties = []) : PendingTransition
@@ -112,6 +117,11 @@ class State
     public function getCustomProperty($key)
     {
         return optional($this->latest())->getCustomProperty($key);
+    }
+
+    public function responsible()
+    {
+        return optional($this->latest())->responsible;
     }
 
     public function allCustomProperties()

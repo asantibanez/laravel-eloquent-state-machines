@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $from
  * @property string $to
  * @property string $custom_properties
+ * @property int $responsible_id
+ * @property string $responsible_type
+ * @property mixed $responsible
  * @property Carbon $created_at
  */
 class StateHistory extends Model
@@ -25,6 +28,11 @@ class StateHistory extends Model
     public function getCustomProperty($key)
     {
         return data_get($this->custom_properties, $key, null);
+    }
+
+    public function responsible()
+    {
+        return $this->morphTo();
     }
 
     public function allCustomProperties()

@@ -24,6 +24,13 @@ abstract class StateMachine
         $this->model = $model;
     }
 
+    public function currentState()
+    {
+        $field = $this->field;
+
+        return $this->model->$field;
+    }
+
     public function history()
     {
         return $this->model->stateHistory()->forField($this->field);
@@ -81,11 +88,16 @@ abstract class StateMachine
      * @param $from
      * @param $to
      * @param array $customProperties
+     * @param null|mixed $responsible
      * @throws TransitionNotAllowedException
      * @throws ValidationException
      */
-    public function transitionTo($from, $to, $customProperties = [])
+    public function transitionTo($from, $to, $customProperties = [], $responsible = null)
     {
+        if ($to === $this->currentState()) {
+            return;
+        }
+
         if (!$this->canBe($from, $to)) {
             throw new TransitionNotAllowedException();
         }
@@ -100,7 +112,9 @@ abstract class StateMachine
         $this->model->save();
 
         if ($this->recordHistory()) {
-            $this->model->recordState($field, $from, $to, $customProperties);
+            $responsible = $responsible ?? auth()->user();
+
+            $this->model->recordState($field, $from, $to, $customProperties, $responsible);
         }
 
         $transitionHooks = $this->transitionHooks()[$to] ?? [];
