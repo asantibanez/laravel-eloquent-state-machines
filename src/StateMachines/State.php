@@ -3,6 +3,7 @@
 
 namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
 
+use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
 use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Carbon\Carbon;
@@ -99,13 +100,22 @@ class State
         );
     }
 
-    public function postponeTransitionTo($state, Carbon $when, $customProperties = []) : PendingTransition
+    /**
+     * @param $state
+     * @param Carbon $when
+     * @param array $customProperties
+     * @param null $responsible
+     * @return null|PendingTransition
+     * @throws TransitionNotAllowedException
+     */
+    public function postponeTransitionTo($state, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
     {
         return $this->stateMachine->postponeTransitionTo(
             $from = $this->state,
             $to = $state,
             $when,
-            $customProperties
+            $customProperties,
+            $responsible
         );
     }
 

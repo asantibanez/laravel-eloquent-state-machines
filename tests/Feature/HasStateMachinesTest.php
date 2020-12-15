@@ -335,15 +335,20 @@ class HasStateMachinesTest extends TestCase
         //Arrange
         $salesOrder = factory(SalesOrder::class)->create();
 
+        $salesManager = factory(SalesManager::class)->create();
+
         //Act
         $customProperties = [
             'comments' => $this->faker->sentence,
         ];
 
+        $responsible = $salesManager;
+
         $salesOrder->status()->postponeTransitionTo(
             'approved',
             Carbon::tomorrow()->startOfDay(),
-            $customProperties
+            $customProperties,
+            $responsible
         );
 
         //Assert
@@ -367,6 +372,8 @@ class HasStateMachinesTest extends TestCase
         $this->assertNull($pendingTransition->applied_at);
 
         $this->assertEquals($salesOrder->id, $pendingTransition->model->id);
+
+        $this->assertEquals($salesManager->id, $pendingTransition->responsible->id);
     }
 
     /** @test */

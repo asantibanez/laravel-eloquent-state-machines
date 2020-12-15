@@ -23,9 +23,6 @@ class PendingTransitionExecutor implements ShouldQueue
         $this->pendingTransition = $pendingTransition;
     }
 
-    /**
-     * @throws InvalidStartingStateException
-     */
     public function handle()
     {
         $field = $this->pendingTransition->field;
@@ -33,6 +30,7 @@ class PendingTransitionExecutor implements ShouldQueue
         $from = $this->pendingTransition->from;
         $to = $this->pendingTransition->to;
         $customProperties = $this->pendingTransition->custom_properties;
+        $responsible = $this->pendingTransition->responsible;
 
         if ($model->$field()->isNot($from)) {
             $exception = new InvalidStartingStateException(
@@ -44,6 +42,6 @@ class PendingTransitionExecutor implements ShouldQueue
             return;
         }
 
-        $model->$field()->transitionTo($to, $customProperties);
+        $model->$field()->transitionTo($to, $customProperties, $responsible);
     }
 }

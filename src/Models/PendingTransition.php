@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $model_id
  * @property string $model_type
  * @property Model $model
+ * @property int $responsible_id
+ * @property string $responsible_type
+ * @property Model $responsible
  */
 class PendingTransition extends Model
 {
@@ -32,6 +35,11 @@ class PendingTransition extends Model
     ];
 
     public function model()
+    {
+        return $this->morphTo();
+    }
+
+    public function responsible()
     {
         return $this->morphTo();
     }

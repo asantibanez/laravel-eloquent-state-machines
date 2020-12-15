@@ -4,6 +4,7 @@ namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
 
 use Asantibanez\LaravelEloquentStateMachines\Jobs\PendingTransitionExecutor;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
+use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesManager;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,9 +21,16 @@ class PendingTransitionExecutorTest extends TestCase
     public function should_apply_pending_transition()
     {
         //Arrange
+        $salesManager = factory(SalesManager::class)->create();
+
         $salesOrder = factory(SalesOrder::class)->create();
 
-        $salesOrder->status()->postponeTransitionTo('approved', Carbon::now());
+        $pendingTransition = $salesOrder->status()->postponeTransitionTo(
+            'approved',
+            Carbon::now(),
+            ['comments' => 'All good!'],
+            $responsible = $salesManager
+        );
 
         $this->assertTrue($salesOrder->status()->is('pending'));
 
@@ -33,14 +41,16 @@ class PendingTransitionExecutorTest extends TestCase
         });
 
         //Act
-        $pendingTransition = $salesOrder->status()->pendingTransitions()->first();
-
         PendingTransitionExecutor::dispatch($pendingTransition);
 
         //Assert
         $salesOrder->refresh();
 
         $this->assertTrue($salesOrder->status()->is('approved'));
+
+        $this->assertEquals('All good!', $salesOrder->status()->getCustomProperty('comments'));
+
+        $this->assertEquals($salesManager->id, $salesOrder->status()->responsible()->id);
 
         $this->assertFalse($salesOrder->status()->hasPendingTransitions());
     }

@@ -15,12 +15,16 @@ class CreateStateHistoriesTable extends Migration
     {
         Schema::create('state_histories', function (Blueprint $table) {
             $table->id();
+
             $table->morphs('model');
             $table->string('field');
+
             $table->string('from')->nullable();
             $table->string('to')->nullable();
+
             $table->json('custom_properties')->nullable();
             $table->nullableMorphs('responsible');
+
             $table->timestamps();
         });
     }

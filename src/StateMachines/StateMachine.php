@@ -132,16 +132,30 @@ abstract class StateMachine
      * @param $to
      * @param Carbon $when
      * @param array $customProperties
-     * @return PendingTransition
+     * @param null $responsible
+     * @return null|PendingTransition
      * @throws TransitionNotAllowedException
      */
-    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = []) : PendingTransition
+    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
     {
+        if ($to === $this->currentState()) {
+            return null;
+        }
+
         if (!$this->canBe($from, $to)) {
             throw new TransitionNotAllowedException();
         }
 
-        return $this->model->recordPendingTransition($this->field, $from, $to, $when, $customProperties);
+        $responsible = $responsible ?? auth()->user();
+
+        return $this->model->recordPendingTransition(
+            $this->field,
+            $from,
+            $to,
+            $when,
+            $customProperties,
+            $responsible
+        );
     }
 
     public function cancelAllPendingTransitions()

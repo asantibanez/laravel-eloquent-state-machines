@@ -86,16 +86,20 @@ trait HasStateMachines
         $this->stateHistory()->save($stateHistory);
     }
 
-    public function recordPendingTransition($field, $from, $to, $when, $customProperties = []) : PendingTransition
+    public function recordPendingTransition($field, $from, $to, $when, $customProperties = [], $responsible = null) : PendingTransition
     {
-        return $this->pendingTransitions()->save(
-            PendingTransition::make([
-                'field' => $field,
-                'from' => $from,
-                'to' => $to,
-                'transition_at' => $when,
-                'custom_properties' => $customProperties
-            ])
-        );
+        $pendingTransition = PendingTransition::make([
+            'field' => $field,
+            'from' => $from,
+            'to' => $to,
+            'transition_at' => $when,
+            'custom_properties' => $customProperties
+        ]);
+
+        if ($responsible !== null) {
+            $pendingTransition->responsible()->associate($responsible);
+        }
+
+        return $this->pendingTransitions()->save($pendingTransition);
     }
 }
