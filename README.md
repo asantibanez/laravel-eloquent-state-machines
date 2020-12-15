@@ -369,6 +369,33 @@ class StatusStateMachine extends StateMachine
 }
 ```
 
+### Postponing Transitions
+
+You can also postpone transitions to other states by using the `postponeTransitionTo` method.
+This method accepts the same parameters as `transitionTo` plus a `$when` Carbon instance to specify
+when the transition is to be run. 
+ 
+`postponeTransitionTo` doesn't apply the transition immediately. Instead, it saves it 
+into a `pending_transitions` table where it keeps track of all pending transitions for all
+models. 
+
+To enable running this transitions at a later time, you must schedule the 
+`PendingTransitionsDispatcher` job class into your scheduler to run every one, five or ten minutes.
+
+```php
+$schedule->job(PendingTransitionsDispatcher::class)->everyMinute();
+```
+
+`PendingTransitionsDispatcher` is responsible for applying the postponed transitions at the specified
+`$when` date/time.
+
+You can check if a model has pending transitions for a particular state machine using the 
+`hasPendingTransitions()` method
+
+```php
+$salesOrder->status()->hasPendingTransitions();
+```
+
 ### Testing
 
 ``` bash
