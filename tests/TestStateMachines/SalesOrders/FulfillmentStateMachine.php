@@ -47,9 +47,14 @@ class FulfillmentStateMachine extends StateMachine
     public function transitionHooks(): array
     {
         return [
-            'pending' => function ($from, $model) {
-                StartSalesOrderFulfillmentJob::dispatch($model);
-            },
+            'pending' => [
+                function ($from, $model) {
+                    StartSalesOrderFulfillmentJob::dispatch($model);
+                },
+                function ($from, $model) {
+                    // Do something else
+                },
+            ],
         ];
     }
 }

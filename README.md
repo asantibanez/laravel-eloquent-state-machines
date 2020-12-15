@@ -347,7 +347,7 @@ applying the transition.
 We can also add custom hooks/callbacks that will be executed once a transition is applied. 
 To do so, we must override the `transitionHooks()` method in our state machine.
 
-The `transitionHooks()` method must return an keyed array with the state and the callback/closure
+The `transitionHooks()` method must return an keyed array with the state and an array of callbacks/closures
 to be executed. Eg. 
 
 ```php
@@ -356,10 +356,14 @@ class StatusStateMachine extends StateMachine
     public function transitionHooks(): array
     {
         return [
-            'processed' => function ($from, $model) {
-                // Add any further processing, eg
-                // Dispatch jobs, events, send mails, etc.
-            },
+            'processed' => [
+                function ($from, $model) {
+                    // Dispatch some job
+                },
+                function ($from, $model) {
+                    // Send mail
+                },
+            ],
         ];
     } 
 }
