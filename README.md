@@ -37,6 +37,9 @@ $salesOrder->fulfillment()->transitionTo('completed');
 $salesOrder->status()->transitionTo('approved', [
     'comments' => 'Customer has available credit',
 ]);
+
+//With responsible
+$salesOrder->status()->transitionTo('approved', [], $responsible); // auth()->user() by default
 ```
 
 Checking available transitions
@@ -45,6 +48,14 @@ Checking available transitions
 $salesOrder->status()->canBe('approved');
 
 $salesOrder->status()->canBe('declined');
+```
+
+Checking current state
+  
+```php
+$salesOrder->status()->is('approved');
+
+$salesOrder->status()->responsible(); // User|null 
 ```
 
 Checking transitions history
@@ -142,7 +153,7 @@ We can define the default/starting state too
 ```php
 public function defaultState(): ?string
 {
-    return 'pending'; // in can be null too 
+    return 'pending'; // it can be null too 
 }
 ```
 
@@ -210,6 +221,15 @@ $salesOrder->status()->transitionTo($to = 'approved', $customProperties = [
 ]);
 ``` 
 
+A `$responsible` can be also specified. By default, `auth()->user()` will be used
+```php
+$salesOrder->status()->transitionTo(
+    $to = 'approved', 
+    $customProperties = [], 
+    $responsible = User::first()
+);
+``` 
+
 When applying the transition, the state machine will verify if the state transition is allowed according
 to the `transitions()` states we've defined. If the transition is not allowed, a `TransitionNotAllowed`
 exception will be thrown.
@@ -272,6 +292,24 @@ properties of previous states using the snapshotWhen($state) method.
 ```php
 $salesOrder->status()->snapshotWhen('approved')->getCustomProperty('comments');
 ```
+
+### Getting Responsible
+
+Similar to custom properties, you can retrieve the `$responsible` object that applied the state transition.
+
+```php
+$salesOrder->status()->responsible();
+```
+
+This method will reach for the responsible of the current state. You can get responsible of previous states 
+using the snapshotWhen($state) method.
+
+```php
+$salesOrder->status()->snapshotWhen('approved')->responsible;
+```
+
+>Note: `responsible` can be `null` if not specified and when the transition happens in a background job. This is
+>because no `auth()->user()` is available. 
 
 ## Advanced Usage
 
