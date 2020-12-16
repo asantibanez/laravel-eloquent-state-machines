@@ -241,6 +241,23 @@ class HasStateMachinesTest extends TestCase
     }
 
     /** @test */
+    public function should_save_auth_user_as_responsible_in_record_history_when_creating_model()
+    {
+        //Arrange
+        $salesManager = factory(SalesManager::class)->create();
+
+        $this->actingAs($salesManager);
+
+        //Act
+        $salesOrder = factory(SalesOrder::class)->create();
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertEquals($salesManager->id, $salesOrder->status()->responsible()->id);
+    }
+
+    /** @test */
     public function should_not_record_history_when_creating_model_if_record_history_turned_off()
     {
         //Arrange
