@@ -45,7 +45,8 @@ trait HasStateMachines
                         return;
                     }
 
-                    $model->recordState($field, null, $currentState);
+                    $responsible = \Auth::user() ?? null;
+                    $model->recordState($field, null, $currentState, [], $responsible);
                 });
         });
     }
