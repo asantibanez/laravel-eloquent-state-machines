@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v2.1.2 - 2020-12-16
+
+- Added auth()->user() in state history during model creation 
+
 ## v2.1.1 - 2020-12-15
 
 - Fixed exported migrations
