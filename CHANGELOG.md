@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v2.2.0 - 2020-12-21
+
+- Added macros on query builder to interact with `state_history`
+
 ## v2.1.2 - 2020-12-16
 
 - Added auth()->user() in state history during model creation 
