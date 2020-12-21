@@ -5,8 +5,10 @@ namespace Asantibanez\LaravelEloquentStateMachines\Traits;
 use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\State;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Javoscript\MacroableModels\Facades\MacroableModels;
+use Str;
 
 /**
  * Trait HasStateMachines
@@ -21,9 +23,28 @@ trait HasStateMachines
 
         collect($model->stateMachines)
             ->each(function ($_, $field) use ($model) {
-                MacroableModels::addMacro(static::class, "$field", function () use ($field) {
+                $camelField = Str::of($field)->camel();
+
+                MacroableModels::addMacro(static::class, $camelField, function () use ($field) {
                     $stateMachine = new $this->stateMachines[$field]($field, $this);
                     return new State($this->{$stateMachine->field}, $stateMachine);
+                });
+
+
+                $studlyField = Str::of($field)->studly();
+
+                Builder::macro("whereHas{$studlyField}", function ($callable) use ($field) {
+                    $model = $this->getModel();
+
+                    if (!method_exists($model, 'stateHistory')) {
+                        return $this->newQuery();
+                    }
+
+                    return $this->whereHas('stateHistory', function ($query) use ($field, $callable) {
+                        $query->forField($field);
+                        $callable($query);
+                        return $query;
+                    });
                 });
             });
 
