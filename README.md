@@ -277,6 +277,37 @@ $salesOrder->status()->history()
     ->get();
 ``` 
 
+### Using Query Builder
+
+The `HasStateMachines` trait introduces a helper method when querying your models based on the state history of each 
+state machine. You can use the `whereHas{FIELD_NAME}` (eg: `whereHasStatus`, `whereHasFulfillment`) to add constraints 
+to your model queries depending on state transitions, responsible and custom properties.
+
+The `whereHas{FIELD_NAME}` method accepts a closure where you can add the following type of constraints:
+
+- `withTransition($from, $to)`
+- `transitionedFrom($to)`
+- `transitionedTo($to)`
+- `withResponsible($responsible|$id)`
+- `withCustomProperty($property, $operator, $value)`
+
+```php
+SalesOrder::with()
+    ->whereHasStatus(function ($query) {
+        $query
+            ->withTransition('pending', 'approved')
+            ->withResponsible(auth()->id())
+        ;
+    })
+    ->whereHasFulfillment(function ($query) {
+        $query
+            ->transitionedTo('complete')
+        ;
+    })
+    ->get();
+```
+
+
 ### Getting Custom Properties
 
 When applying transitions with custom properties, we can get our registered values using the

@@ -50,13 +50,40 @@ class StateHistory extends Model
         $query->where('from', $from);
     }
 
+    public function scopeTransitionedFrom($query, $from)
+    {
+        $query->from($from);
+    }
+
     public function scopeTo($query, $to)
     {
         $query->where('to', $to);
     }
 
+    public function scopeTransitionedTo($query, $to)
+    {
+        $query->to($to);
+    }
+
+    public function scopeWithTransition($query, $from, $to)
+    {
+        $query->from($from)->to($to);
+    }
+
     public function scopeWithCustomProperty($query, $key, $operator, $value = null)
     {
         $query->where("custom_properties->{$key}", $operator, $value);
+    }
+
+    public function scopeWithResponsible($query, $responsible)
+    {
+        if ($responsible instanceof Model) {
+            return $query
+                ->where('responsible_id', $responsible->getKey())
+                ->where('responsible_type', get_class($responsible))
+            ;
+        }
+
+        return $query->where('responsible_id', $responsible);
     }
 }
