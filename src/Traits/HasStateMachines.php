@@ -23,13 +23,17 @@ trait HasStateMachines
 
         collect($model->stateMachines)
             ->each(function ($_, $field) use ($model) {
+                MacroableModels::addMacro(static::class, $field, function () use ($field) {
+                    $stateMachine = new $this->stateMachines[$field]($field, $this);
+                    return new State($this->{$stateMachine->field}, $stateMachine);
+                });
+
                 $camelField = Str::of($field)->camel();
 
                 MacroableModels::addMacro(static::class, $camelField, function () use ($field) {
                     $stateMachine = new $this->stateMachines[$field]($field, $this);
                     return new State($this->{$stateMachine->field}, $stateMachine);
                 });
-
 
                 $studlyField = Str::of($field)->studly();
 

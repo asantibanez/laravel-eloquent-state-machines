@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v2.2.1 - 2020-12-22
+
+- Added `snake_case()` and `camelCase()` method for state machine field.
+
 ## v2.2.0 - 2020-12-21
 
 - Added macros on query builder to interact with `state_history`

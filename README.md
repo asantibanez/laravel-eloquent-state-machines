@@ -194,12 +194,14 @@ one method per each field mapped in `$stateMachines`. Eg.
 
 For
 ```php 
-'status' => StatusStateMachine::class
+'status' => StatusStateMachine::class,
+'fulfillment_status' => FulfillmentStatusStateMachine::class
 ```
 
 We will have an accompanying method 
 ```php
-status()
+status();
+fulfillment_status(); // or fulfillmentStatus()
 ```
 
 with which we can use to check our current state, history and apply transitions. 
