@@ -116,6 +116,7 @@ trait HasStateMachines
 
     public function recordPendingTransition($field, $from, $to, $when, $customProperties = [], $responsible = null) : PendingTransition
     {
+        /** @var PendingTransition $pendingTransition */
         $pendingTransition = PendingTransition::make([
             'field' => $field,
             'from' => $from,
@@ -128,6 +129,8 @@ trait HasStateMachines
             $pendingTransition->responsible()->associate($responsible);
         }
 
-        return $this->pendingTransitions()->save($pendingTransition);
+        $pendingTransition = $this->pendingTransitions()->save($pendingTransition);
+
+        return $pendingTransition;
     }
 }
