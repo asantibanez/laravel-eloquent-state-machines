@@ -7,8 +7,9 @@ use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\State;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Javoscript\MacroableModels\Facades\MacroableModels;
-use Str;
+
 
 /**
  * Trait HasStateMachines
