@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v3.0.0 - 2021-02-10
+
+- Added `beforeTransitionHooks`
+- **Breaking Change**: Renamed `transitionHooks` to `afterTransitionHooks` and changed arguments for callbacks
+- Refactored tests
+
 ## v2.3.0 - 2020-01-26
 
 - Added support for PHP 8.
