@@ -107,6 +107,13 @@ abstract class StateMachine
             throw new ValidationException($validator);
         }
 
+        $beforeTransitionHooks = $this->beforeTransitionHooks()[$from] ?? [];
+
+        collect($beforeTransitionHooks)
+            ->each(function ($callable) use ($to) {
+                $callable($to, $this->model);
+            });
+
         $field = $this->field;
         $this->model->$field = $to;
         $this->model->save();
@@ -174,7 +181,12 @@ abstract class StateMachine
         return null;
     }
 
-    public function transitionHooks() : array {
+    public function transitionHooks() : array
+    {
+        return [];
+    }
+
+    public function beforeTransitionHooks() : array {
         return [];
     }
 }

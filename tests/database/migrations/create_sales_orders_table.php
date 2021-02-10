@@ -10,6 +10,8 @@ class CreateSalesOrdersTable extends Migration
     {
         Schema::create('sales_orders', function (Blueprint $table) {
             $table->id();
+            $table->string('notes')->nullable();
+            $table->decimal('total')->nullable();
             $table->string('status');
             $table->string('fulfillment')->nullable();
             $table->timestamps();
