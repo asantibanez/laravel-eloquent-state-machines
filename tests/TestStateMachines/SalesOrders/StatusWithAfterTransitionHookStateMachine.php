@@ -27,19 +27,19 @@ class StatusWithAfterTransitionHookStateMachine extends StateMachine
         return 'pending';
     }
 
-    public function transitionHooks(): array
+    public function afterTransitionHooks(): array
     {
         return [
-            'approved' => [
-                function($from, $model) {
+            'pending' => [
+                function($to, $model) {
                     $model->total = 200;
                     $model->save();
                 },
-                function($from, $model) {
+                function($to, $model) {
                     $model->notes = 'after';
                     $model->save();
                 },
-                function ($from, $model) {
+                function ($to, $model) {
                     AfterTransitionJob::dispatch();
                 },
             ]

@@ -44,7 +44,7 @@ class FulfillmentStateMachine extends StateMachine
         return parent::validatorForTransition($from, $to, $model);
     }
 
-    public function transitionHooks(): array
+    public function afterTransitionHooks(): array
     {
         return [
             'pending' => [
