@@ -377,24 +377,43 @@ applying the transition.
 
 ### Adding Hooks 
 
-We can also add custom hooks/callbacks that will be executed once a transition is applied. 
-To do so, we must override the `transitionHooks()` method in our state machine.
+We can also add custom hooks/callbacks that will be executed before/after a transition is applied. 
+To do so, we must override the `beforeTransitionHooks()` and `afterTransitionHooks()` methods in our state machine 
+accordingly.
 
-The `transitionHooks()` method must return an keyed array with the state and an array of callbacks/closures
-to be executed. Eg. 
+Both transition hooks methods must return a keyed array with the state and an array of callbacks/closures
+to be executed.
+
+> NOTE: The keys for the array must be the `$from` states.
+
+Example 
 
 ```php
 class StatusStateMachine extends StateMachine
 {
-    public function transitionHooks(): array
+    public function beforeTransitionHooks(): array
     {
         return [
-            'processed' => [
-                function ($from, $model) {
-                    // Dispatch some job
+            'approved' => [
+                function ($to, $model) {
+                    // Dispatch some job BEFORE "approved changes to $to"
                 },
-                function ($from, $model) {
-                    // Send mail
+                function ($to, $model) {
+                    // Send mail BEFORE "approved changes to $to" 
+                },
+            ],
+        ];
+    }
+    
+    public function afterTransitionHooks(): array
+    {
+        return [
+            'approved' => [
+                function ($to, $model) {
+                    // Dispatch some job AFTER "approved changes to $to"
+                },
+                function ($to, $model) {
+                    // Send mail AFTER "approved changes to $to" 
                 },
             ],
         ];
