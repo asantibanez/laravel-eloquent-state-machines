@@ -5,9 +5,9 @@ namespace Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\Sales
 
 
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\BeforeTransitionJob;
+use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\AfterTransitionJob;
 
-class StatusWithBeforeTransitionHookStateMachine extends StateMachine
+class StatusWithAfterTransitionHookStateMachine extends StateMachine
 {
     public function recordHistory(): bool
     {
@@ -27,19 +27,21 @@ class StatusWithBeforeTransitionHookStateMachine extends StateMachine
         return 'pending';
     }
 
-    public function beforeTransitionHooks(): array
+    public function transitionHooks(): array
     {
         return [
-            'pending' => [
-                function($to, $model) {
-                    $model->total = 100;
+            'approved' => [
+                function($from, $model) {
+                    $model->total = 200;
+                    $model->save();
                 },
-                function($to, $model) {
-                    $model->notes = 'Notes updated';
+                function($from, $model) {
+                    $model->notes = 'after';
+                    $model->save();
                 },
-                function ($to, $model) {
-                    BeforeTransitionJob::dispatch();
-                }
+                function ($from, $model) {
+                    AfterTransitionJob::dispatch();
+                },
             ]
         ];
     }

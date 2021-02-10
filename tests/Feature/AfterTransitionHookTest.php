@@ -3,27 +3,28 @@
 namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
 
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\BeforeTransitionJob;
+use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\AfterTransitionJob;
+use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithAfterTransitionHook;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Queue;
 
-class BeforeTransitionHookTest extends TestCase
+class AfterTransitionHookTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
 
     /** @test */
-    public function should_call_before_transition_hooks()
+    public function should_call_after_transition_hooks()
     {
         //Arrange
         Queue::fake();
 
-        $salesOrder = SalesOrderWithBeforeTransitionHook::create();
-
-        $this->assertNull($salesOrder->total);
-        $this->assertNull($salesOrder->notes);
+        $salesOrder = SalesOrderWithAfterTransitionHook::create([
+            'total' => 100,
+            'notes' => 'before',
+        ]);
 
         //Act
         $salesOrder->status()->transitionTo('approved');
@@ -31,19 +32,19 @@ class BeforeTransitionHookTest extends TestCase
         //Assert
         $salesOrder->refresh();
 
-        $this->assertEquals(100, $salesOrder->total);
-        $this->assertEquals('Notes updated', $salesOrder->notes);
+        $this->assertEquals(200, $salesOrder->total);
+        $this->assertEquals('after', $salesOrder->notes);
 
-        Queue::assertPushed(BeforeTransitionJob::class);
+        Queue::assertPushed(AfterTransitionJob::class);
     }
 
     /** @test */
-    public function should_not_call_before_transition_hooks_if_not_defined()
+    public function should_not_call_after_transition_hooks_if_not_defined()
     {
         //Arrange
         Queue::fake();
 
-        $salesOrder = SalesOrderWithBeforeTransitionHook::create([
+        $salesOrder = SalesOrderWithAfterTransitionHook::create([
             'status' => 'approved'
         ]);
 
@@ -59,6 +60,6 @@ class BeforeTransitionHookTest extends TestCase
         $this->assertNull($salesOrder->total);
         $this->assertNull($salesOrder->notes);
 
-        Queue::assertNotPushed(BeforeTransitionJob::class);
+        Queue::assertNotPushed(AfterTransitionJob::class);
     }
 }

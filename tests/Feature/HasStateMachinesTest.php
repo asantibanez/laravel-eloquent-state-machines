@@ -300,26 +300,6 @@ class HasStateMachinesTest extends TestCase
     }
 
     /** @test */
-    public function should_call_transition_hook()
-    {
-        Queue::fake();
-
-        //Arrange
-        $salesOrder = factory(SalesOrder::class)->create([
-            'status' => 'approved',
-        ]);
-
-        //Act
-        $salesOrder->fulfillment()->transitionTo('pending');
-
-        //Assert
-        Queue::assertPushed(StartSalesOrderFulfillmentJob::class, function ($job) use ($salesOrder) {
-            $this->assertEquals($salesOrder->id, $job->salesOrder->id);
-            return true;
-        });
-    }
-
-    /** @test */
     public function can_check_if_previous_state_was_transitioned()
     {
         //Arrange
