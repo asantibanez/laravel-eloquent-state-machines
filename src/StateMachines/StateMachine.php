@@ -9,6 +9,8 @@ use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
 use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 
@@ -116,12 +118,15 @@ abstract class StateMachine
 
         $field = $this->field;
         $this->model->$field = $to;
+
+        $changedAttributes = $this->model->getChangedAttributes();
+
         $this->model->save();
 
         if ($this->recordHistory()) {
             $responsible = $responsible ?? auth()->user();
 
-            $this->model->recordState($field, $from, $to, $customProperties, $responsible);
+            $this->model->recordState($field, $from, $to, $customProperties, $responsible, $changedAttributes);
         }
 
         $afterTransitionHooks = $this->afterTransitionHooks()[$from] ?? [];

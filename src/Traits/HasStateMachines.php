@@ -7,6 +7,7 @@ use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\State;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Javoscript\MacroableModels\Facades\MacroableModels;
 
@@ -73,9 +74,25 @@ trait HasStateMachines
 
                     $responsible = auth()->user();
 
-                    $model->recordState($field, null, $currentState, [], $responsible);
+                    $changedAttributes = $model->getChangedAttributes();
+
+                    $model->recordState($field, null, $currentState, [], $responsible, $changedAttributes);
                 });
         });
+    }
+
+    public function getChangedAttributes() : array
+    {
+        return collect($this->getDirty())
+            ->mapWithKeys(function ($_, $attribute) {
+                return [
+                    $attribute => [
+                        'new' => data_get($this->getAttributes(), $attribute),
+                        'old' => data_get($this->getOriginal(), $attribute),
+                    ],
+                ];
+            })
+            ->toArray();
     }
 
     public function initStateMachines()
@@ -98,13 +115,14 @@ trait HasStateMachines
         return $this->morphMany(PendingTransition::class, 'model');
     }
 
-    public function recordState($field, $from, $to, $customProperties = [], $responsible = null)
+    public function recordState($field, $from, $to, $customProperties = [], $responsible = null, $changedAttributes = [])
     {
         $stateHistory = StateHistory::make([
             'field' => $field,
             'from' => $from,
             'to' => $to,
             'custom_properties' => $customProperties,
+            'changed_attributes' => $changedAttributes,
         ]);
 
         if ($responsible !== null) {

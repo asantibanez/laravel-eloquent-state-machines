@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $field
  * @property string $from
  * @property string $to
- * @property string $custom_properties
+ * @property array $custom_properties
  * @property int $responsible_id
  * @property string $responsible_type
  * @property mixed $responsible
  * @property Carbon $created_at
+ * @property array $changed_attributes
  */
 class StateHistory extends Model
 {
@@ -23,6 +24,7 @@ class StateHistory extends Model
 
     protected $casts = [
         'custom_properties' => 'array',
+        'changed_attributes' => 'array',
     ];
 
     public function getCustomProperty($key)
@@ -38,6 +40,21 @@ class StateHistory extends Model
     public function allCustomProperties()
     {
         return $this->custom_properties ?? [];
+    }
+
+    public function changedAttributesNames()
+    {
+        return collect($this->changed_attributes ?? [])->keys()->toArray();
+    }
+
+    public function changedAttributeOldValue($attribute)
+    {
+        return data_get($this->changed_attributes, "$attribute.old", null);
+    }
+
+    public function changedAttributeNewValue($attribute)
+    {
+        return data_get($this->changed_attributes, "$attribute.new", null);
     }
 
     public function scopeForField($query, $field)
