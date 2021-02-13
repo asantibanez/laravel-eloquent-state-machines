@@ -346,6 +346,29 @@ $salesOrder->status()->snapshotWhen('approved')->responsible;
 
 ## Advanced Usage
 
+### Tracking Attribute Changes
+
+When `recordHistory()` is active, model state transitions are recorded in the `state_histories` table. Each transition
+record contains information about the attributes that changed during the state transition. You can get information
+about what has changed via the `changedAttributesNames()` method. This method will return an array of the attributes
+names that changed. With these attributes names, you can then use the methods `changedAttributeOldValue($attributeName)`
+and `changedAttributeNewValue($attributeName)` to get the old and new values respectively.
+
+```php
+$salesOrder = SalesOrder::create([
+    'total' => 100,
+]);
+
+$salesOrder->total = 200;
+
+$salesOrder->status()->transitionTo('approved');
+
+$salesOrder->changedAttributesNames(); // ['total']
+
+$salesOrder->changedAttributeOldValue('total'); // 100
+$salesOrder->changedAttributeNewValue('total'); // 200
+```
+
 ### Adding Validations
 
 Before transitioning to a new state, we can add validations that will allow/disallow the transition. To

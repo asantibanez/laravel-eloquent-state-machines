@@ -2,10 +2,15 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v4.0.0 - 2021-02-12
+
+- Added `changed_attributes` field in `state_histories` to record model old/new 
+  values during transition (**Breaking change**)
+
 ## v3.0.0 - 2021-02-10
 
 - Added `beforeTransitionHooks`
-- **Breaking Change**: Renamed `transitionHooks` to `afterTransitionHooks` and changed arguments for callbacks
+- Renamed `transitionHooks` to `afterTransitionHooks` and changed arguments for callbacks (**Breaking Change**)
 - Refactored tests
 
 ## v2.3.0 - 2020-01-26
