@@ -129,11 +129,11 @@ abstract class StateMachine
             $this->model->recordState($field, $from, $to, $customProperties, $responsible, $changedAttributes);
         }
 
-        $afterTransitionHooks = $this->afterTransitionHooks()[$from] ?? [];
+        $afterTransitionHooks = $this->afterTransitionHooks()[$to] ?? [];
 
         collect($afterTransitionHooks)
-            ->each(function ($callable) use ($to) {
-                $callable($to, $this->model);
+            ->each(function ($callable) use ($from) {
+                $callable($from, $this->model);
             });
 
         $this->cancelAllPendingTransitions();
