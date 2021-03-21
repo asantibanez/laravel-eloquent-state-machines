@@ -404,10 +404,11 @@ We can also add custom hooks/callbacks that will be executed before/after a tran
 To do so, we must override the `beforeTransitionHooks()` and `afterTransitionHooks()` methods in our state machine 
 accordingly.
 
-Both transition hooks methods must return a keyed array with the state and an array of callbacks/closures
+Both transition hooks methods must return a keyed array with the state as key, and an array of callbacks/closures
 to be executed.
 
-> NOTE: The keys for the array must be the `$from` states.
+> NOTE: The keys for beforeTransitionHooks() must be the `$from` states.
+> NOTE: The keys for afterTransitionHooks() must be the `$to` states.
 
 Example 
 
@@ -431,12 +432,12 @@ class StatusStateMachine extends StateMachine
     public function afterTransitionHooks(): array
     {
         return [
-            'approved' => [
-                function ($to, $model) {
-                    // Dispatch some job AFTER "approved changes to $to"
+            'processed' => [
+                function ($from, $model) {
+                    // Dispatch some job AFTER "$from transitioned to processed"
                 },
-                function ($to, $model) {
-                    // Send mail AFTER "approved changes to $to" 
+                function ($from, $model) {
+                    // Send mail AFTER "$from transitioned to processed" 
                 },
             ],
         ];
