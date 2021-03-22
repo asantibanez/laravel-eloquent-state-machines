@@ -7,7 +7,6 @@ use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Asantibanez\LaravelEloquentStateMachines\StateMachines\State;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Javoscript\MacroableModels\Facades\MacroableModels;
 
@@ -39,7 +38,7 @@ trait HasStateMachines
 
                 $studlyField = Str::of($field)->studly();
 
-                Builder::macro("whereHas{$studlyField}", function ($callable) use ($field) {
+                Builder::macro("whereHas{$studlyField}", function ($callable = null) use ($field) {
                     $model = $this->getModel();
 
                     if (!method_exists($model, 'stateHistory')) {
@@ -48,7 +47,9 @@ trait HasStateMachines
 
                     return $this->whereHas('stateHistory', function ($query) use ($field, $callable) {
                         $query->forField($field);
-                        $callable($query);
+                        if ($callable !== null) {
+                            $callable($query);
+                        }
                         return $query;
                     });
                 });
