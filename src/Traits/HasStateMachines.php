@@ -18,18 +18,31 @@ use Javoscript\MacroableModels\Facades\MacroableModels;
  */
 trait HasStateMachines
 {
+    private static function resolveStateMachineMethodName($field, $model)
+    {
+        $methodName = $field;
+
+        if (method_exists($model->stateMachines[$field], 'methodName')) {
+            $methodName = $model->stateMachines[$field]::methodName();
+        }
+
+        return $methodName;
+    }
+
     public static function bootHasStateMachines()
     {
         $model = new static();
 
         collect($model->stateMachines)
             ->each(function ($_, $field) use ($model) {
-                MacroableModels::addMacro(static::class, $field, function () use ($field) {
+                $methodName = self::resolveStateMachineMethodName($field, $model);
+
+                MacroableModels::addMacro(static::class, $methodName, function () use ($field) {
                     $stateMachine = new $this->stateMachines[$field]($field, $this);
                     return new State($this->{$stateMachine->field}, $stateMachine);
                 });
 
-                $camelField = Str::of($field)->camel();
+                $camelField = Str::of($methodName)->camel();
 
                 MacroableModels::addMacro(static::class, $camelField, function () use ($field) {
                     $stateMachine = new $this->stateMachines[$field]($field, $this);
@@ -63,7 +76,10 @@ trait HasStateMachines
             collect($model->stateMachines)
                 ->each(function ($_, $field) use ($model) {
                     $currentState = $model->$field;
-                    $stateMachine = $model->$field()->stateMachine();
+
+                    $methodName = self::resolveStateMachineMethodName($field, $model);
+
+                    $stateMachine = $model->$methodName()->stateMachine();
 
                     if ($currentState === null) {
                         return;
