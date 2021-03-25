@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v5.0.1 - 2021-03-24
+
+- Made `callable` null for `whereHas` query helper
+- Removed unused configuration
+
+## v5.0.0 - 2021-03-24
+
+- Reverted afterTransitionHooks array key to use $to for definition (**Breaking change**)
+  
 ## v4.0.0 - 2021-02-12
 
 - Added `changed_attributes` field in `state_histories` to record model old/new 
