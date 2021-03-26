@@ -112,8 +112,8 @@ abstract class StateMachine
         $beforeTransitionHooks = $this->beforeTransitionHooks()[$from] ?? [];
 
         collect($beforeTransitionHooks)
-            ->each(function ($callable) use ($to) {
-                $callable($to, $this->model);
+            ->each(function ($callable) use ($customProperties, $to) {
+                $callable($to, $this->model, $customProperties);
             });
 
         $field = $this->field;
@@ -132,8 +132,8 @@ abstract class StateMachine
         $afterTransitionHooks = $this->afterTransitionHooks()[$to] ?? [];
 
         collect($afterTransitionHooks)
-            ->each(function ($callable) use ($from) {
-                $callable($from, $this->model);
+            ->each(function ($callable) use ($customProperties, $from) {
+                $callable($from, $this->model, $customProperties);
             });
 
         $this->cancelAllPendingTransitions();

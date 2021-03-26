@@ -407,6 +407,8 @@ accordingly.
 Both transition hooks methods must return a keyed array with the state as key, and an array of callbacks/closures
 to be executed.
 
+The property `$customProperties` in each callback is optional. This array contains the given custom attributes provided in the transition.
+
 > NOTE: The keys for beforeTransitionHooks() must be the `$from` states.
 > NOTE: The keys for afterTransitionHooks() must be the `$to` states.
 
@@ -419,10 +421,10 @@ class StatusStateMachine extends StateMachine
     {
         return [
             'approved' => [
-                function ($to, $model) {
+                function ($to, $model, $customProperties) {
                     // Dispatch some job BEFORE "approved changes to $to"
                 },
-                function ($to, $model) {
+                function ($to, $model, $customProperties) {
                     // Send mail BEFORE "approved changes to $to" 
                 },
             ],
@@ -433,10 +435,10 @@ class StatusStateMachine extends StateMachine
     {
         return [
             'processed' => [
-                function ($from, $model) {
+                function ($from, $model, $customProperties) {
                     // Dispatch some job AFTER "$from transitioned to processed"
                 },
-                function ($from, $model) {
+                function ($from, $model, $customProperties) {
                     // Send mail AFTER "$from transitioned to processed" 
                 },
             ],

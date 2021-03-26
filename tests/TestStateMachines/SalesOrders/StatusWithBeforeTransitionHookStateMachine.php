@@ -37,6 +37,11 @@ class StatusWithBeforeTransitionHookStateMachine extends StateMachine
                 function($to, $model) {
                     $model->notes = 'Notes updated';
                 },
+                function($to, $model, $customProperties) {
+                    if (isset($customProperties['custom'])) {
+                        $model->custom = $customProperties['custom'];
+                    }
+                },
                 function ($to, $model) {
                     BeforeTransitionJob::dispatch();
                 }

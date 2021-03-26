@@ -39,6 +39,12 @@ class StatusWithAfterTransitionHookStateMachine extends StateMachine
                     $model->notes = 'after';
                     $model->save();
                 },
+                function($to, $model, $customProperties) {
+                    if (isset($customProperties['custom'])) {
+                        $model->custom = $customProperties['custom'];
+                        $model->save();
+                    }
+                },
                 function ($from, $model) {
                     AfterTransitionJob::dispatch();
                 },

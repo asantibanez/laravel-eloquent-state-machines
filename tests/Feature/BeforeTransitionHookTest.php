@@ -7,7 +7,7 @@ use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\BeforeTransitionJob;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Queue;
+use Illuminate\Support\Facades\Queue;
 
 class BeforeTransitionHookTest extends TestCase
 {
@@ -33,6 +33,33 @@ class BeforeTransitionHookTest extends TestCase
 
         $this->assertEquals(100, $salesOrder->total);
         $this->assertEquals('Notes updated', $salesOrder->notes);
+
+        Queue::assertPushed(BeforeTransitionJob::class);
+    }
+
+    /** @test */
+    public function should_call_before_transition_hooks_with_custom_properties()
+    {
+        //Arrange
+        Queue::fake();
+
+        $salesOrder = SalesOrderWithBeforeTransitionHook::create();
+
+        $this->assertNull($salesOrder->total);
+        $this->assertNull($salesOrder->notes);
+        $this->assertNull($salesOrder->custom);
+
+        //Act
+        $salesOrder->status()->transitionTo('approved', [
+            'custom' => 'property',
+        ]);
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertEquals(100, $salesOrder->total);
+        $this->assertEquals('Notes updated', $salesOrder->notes);
+        $this->assertEquals('property', $salesOrder->custom);
 
         Queue::assertPushed(BeforeTransitionJob::class);
     }

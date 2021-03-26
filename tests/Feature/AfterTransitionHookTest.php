@@ -5,10 +5,9 @@ namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\AfterTransitionJob;
 use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithAfterTransitionHook;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Queue;
+use Illuminate\Support\Facades\Queue;
 
 class AfterTransitionHookTest extends TestCase
 {
@@ -34,6 +33,33 @@ class AfterTransitionHookTest extends TestCase
 
         $this->assertEquals(200, $salesOrder->total);
         $this->assertEquals('after', $salesOrder->notes);
+
+        Queue::assertPushed(AfterTransitionJob::class);
+    }
+
+    /** @test */
+    public function should_call_after_transition_hooks_with_custom_properties()
+    {
+        //Arrange
+        Queue::fake();
+
+        $salesOrder = SalesOrderWithAfterTransitionHook::create([
+            'total' => 100,
+            'notes' => 'before',
+            'custom' => 'no'
+        ]);
+
+        //Act
+        $salesOrder->status()->transitionTo('approved', [
+            'custom' => 'yes',
+        ]);
+
+        //Assert
+        $salesOrder->refresh();
+
+        $this->assertEquals(200, $salesOrder->total);
+        $this->assertEquals('after', $salesOrder->notes);
+        $this->assertEquals('yes', $salesOrder->custom);
 
         Queue::assertPushed(AfterTransitionJob::class);
     }

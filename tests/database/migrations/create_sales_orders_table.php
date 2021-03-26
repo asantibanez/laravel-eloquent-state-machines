@@ -12,6 +12,7 @@ class CreateSalesOrdersTable extends Migration
             $table->id();
             $table->string('notes')->nullable();
             $table->decimal('total')->nullable();
+            $table->string('custom')->nullable();
             $table->string('status');
             $table->string('fulfillment')->nullable();
             $table->timestamps();
