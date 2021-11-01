@@ -293,6 +293,8 @@ The `whereHas{FIELD_NAME}` method accepts a closure where you can add the follow
 - `withResponsible($responsible|$id)`
 - `withCustomProperty($property, $operator, $value)`
 
+The `$from` and `$to` parameters can be either a status name as a string or an array of status names.
+
 ```php
 SalesOrder::with()
     ->whereHasStatus(function ($query) {
