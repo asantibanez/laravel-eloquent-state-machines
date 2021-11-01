@@ -16,8 +16,9 @@ class StatusStateMachine extends StateMachine
     public function transitions(): array
     {
         return [
-            'pending' => ['approved'],
+            'pending' => ['approved', 'waiting'],
             'approved' => ['processed'],
+            'waiting' => ['cancelled'],
         ];
     }
 

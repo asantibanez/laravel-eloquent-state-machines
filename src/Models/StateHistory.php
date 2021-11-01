@@ -64,7 +64,11 @@ class StateHistory extends Model
 
     public function scopeFrom($query, $from)
     {
-        $query->where('from', $from);
+        if (is_array($from)) {
+            $query->whereIn('from', $from);
+        } else {
+            $query->where('from', $from);
+        }
     }
 
     public function scopeTransitionedFrom($query, $from)
@@ -74,7 +78,11 @@ class StateHistory extends Model
 
     public function scopeTo($query, $to)
     {
-        $query->where('to', $to);
+        if (is_array($to)) {
+            $query->whereIn('to', $to);
+        } else {
+            $query->where('to', $to);
+        }
     }
 
     public function scopeTransitionedTo($query, $to)
