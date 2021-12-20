@@ -100,7 +100,7 @@ abstract class StateMachine
             return;
         }
 
-        if (!$this->canBe($from, $to)) {
+        if (!$this->canBe($from, $to) && !$this->canBe($from, '*') && !$this->canBe('*', $to) && !$this->canBe('*', '*')) {
             throw new TransitionNotAllowedException();
         }
 
