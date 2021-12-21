@@ -91,11 +91,11 @@ abstract class StateMachine
      * @param $to
      * @param array $customProperties
      * @param null|mixed $responsible
-     * @param null|mixed $hookData
+     * @param null|array $hookData
      * @throws TransitionNotAllowedException
      * @throws ValidationException
      */
-    public function transitionTo($from, $to, $customProperties = [], $responsible = null, $hookData = null)
+    public function transitionTo($from, $to, $customProperties = [], $responsible = null, $hookData = [])
     {
         if ($to === $this->currentState()) {
             return;
@@ -146,11 +146,11 @@ abstract class StateMachine
      * @param Carbon $when
      * @param array $customProperties
      * @param null $responsible
-     * @param null|mixed $hookData
+     * @param null|array $hookData
      * @return null|PendingTransition
      * @throws TransitionNotAllowedException
      */
-    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [], $responsible = null, $hookData = null) : ?PendingTransition
+    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [], $responsible = null, $hookData = []) : ?PendingTransition
     {
         if ($to === $this->currentState()) {
             return null;

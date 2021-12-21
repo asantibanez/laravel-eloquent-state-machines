@@ -19,6 +19,7 @@ class CreatePendingTransitionsTable extends Migration
 
             $table->json('custom_properties')->nullable();
             $table->nullableMorphs('responsible');
+            $table->json('hook_data')->nullable();
 
             $table->dateTime('transition_at');
             $table->dateTime('applied_at')->nullable();

@@ -90,7 +90,7 @@ class State
         return $this->stateMachine->hasPendingTransitions();
     }
 
-    public function transitionTo($state, $customProperties = [], $responsible = null, $hookData = null)
+    public function transitionTo($state, $customProperties = [], $responsible = null, $hookData = [])
     {
         $this->stateMachine->transitionTo(
             $from = $this->state,
@@ -106,11 +106,11 @@ class State
      * @param Carbon $when
      * @param array $customProperties
      * @param null $responsible
-     * @param null|mixed $hookData
+     * @param null|array $hookData
      * @return null|PendingTransition
      * @throws TransitionNotAllowedException
      */
-    public function postponeTransitionTo($state, Carbon $when, $customProperties = [], $responsible = null, $hookData = null) : ?PendingTransition
+    public function postponeTransitionTo($state, Carbon $when, $customProperties = [], $responsible = null, $hookData = []) : ?PendingTransition
     {
         return $this->stateMachine->postponeTransitionTo(
             $from = $this->state,

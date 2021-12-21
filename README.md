@@ -42,7 +42,7 @@ $salesOrder->status()->transitionTo('approved', [
 $salesOrder->status()->transitionTo('approved', [], $responsible); // auth()->user() by default
 
 //With arbitrary hook data (only used in before and after hooks)
-$salesOrder->status()->transitionTo('approved', [], $responsible, ['referrer' => 'google']); // Can be of any type
+$salesOrder->status()->transitionTo('approved', [], $responsible, ['referrer' => 'google']);
 ```
 
 Checking available transitions
@@ -451,7 +451,7 @@ class StatusStateMachine extends StateMachine
 The callback signature looks like this:
 
 ```php
-function ($to | $from, $model, $customProperties = [], $responsible = null, $hookData = null);
+function ($to | $from, $model, $customProperties = [], $responsible = null, $hookData = []);
 ```
 
 ### Postponing Transitions
