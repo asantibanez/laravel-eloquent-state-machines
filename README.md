@@ -229,9 +229,10 @@ $salesOrder->status()->transitionTo($to = 'approved', $customProperties = [
 A `$responsible` can be also specified. By default, `auth()->user()` will be used
 ```php
 $salesOrder->status()->transitionTo(
-    $to = 'approved', 
-    $customProperties = [], 
-    $responsible = User::first()
+    $to = 'approved',
+    $customProperties = [],
+    $responsible = User::first(),
+    $hookData = []
 );
 ``` 
 
