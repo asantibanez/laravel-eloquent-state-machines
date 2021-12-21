@@ -437,6 +437,9 @@ class HasStateMachinesTest extends TestCase
         } catch (Throwable $exception) {
             //Assert
             $this->assertTrue($exception instanceof TransitionNotAllowedException);
+            $this->assertEquals('pending', $exception->getFrom());
+            $this->assertEquals('invalid', $exception->getTo());
+            $this->assertEquals(SalesOrder::class, $exception->getModel());
         }
     }
 }
