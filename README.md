@@ -40,6 +40,9 @@ $salesOrder->status()->transitionTo('approved', [
 
 //With responsible
 $salesOrder->status()->transitionTo('approved', [], $responsible); // auth()->user() by default
+
+//With arbitrary hook data (only used in before and after hooks)
+$salesOrder->status()->transitionTo('approved', [], $responsible, ['referrer' => 'google']); // Can be of any type
 ```
 
 Checking available transitions
@@ -407,7 +410,7 @@ accordingly.
 Both transition hooks methods must return a keyed array with the state as key, and an array of callbacks/closures
 to be executed.
 
-> NOTE: The keys for beforeTransitionHooks() must be the `$from` states.
+> NOTE: The keys for beforeTransitionHooks() must be the `$from` states.  
 > NOTE: The keys for afterTransitionHooks() must be the `$to` states.
 
 Example 
@@ -443,6 +446,12 @@ class StatusStateMachine extends StateMachine
         ];
     } 
 }
+```
+
+The callback signature looks like this:
+
+```php
+function ($to | $from, $model, $customProperties = [], $responsible = null, $hookData = null);
 ```
 
 ### Postponing Transitions
