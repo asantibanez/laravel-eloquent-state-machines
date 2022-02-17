@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v5.1.0 - 2022-02-17
+
+- Added support for Laravel 9. By @leohubert in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/32
+- Improved CI. By @leohubert in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/32
+
 ## v5.0.1 - 2021-03-24
 
 - Made `callable` null for `whereHas` query helper
