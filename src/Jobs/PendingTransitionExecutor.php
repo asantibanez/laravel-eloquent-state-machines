@@ -31,6 +31,7 @@ class PendingTransitionExecutor implements ShouldQueue
         $to = $this->pendingTransition->to;
         $customProperties = $this->pendingTransition->custom_properties;
         $responsible = $this->pendingTransition->responsible;
+        $hookData = $this->pendingTransition->hookData;
 
         if ($model->$field()->isNot($from)) {
             $exception = new InvalidStartingStateException(
@@ -42,6 +43,6 @@ class PendingTransitionExecutor implements ShouldQueue
             return;
         }
 
-        $model->$field()->transitionTo($to, $customProperties, $responsible);
+        $model->$field()->transitionTo($to, $customProperties, $responsible, $hookData);
     }
 }

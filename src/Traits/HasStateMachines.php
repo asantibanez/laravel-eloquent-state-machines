@@ -133,7 +133,7 @@ trait HasStateMachines
         $this->stateHistory()->save($stateHistory);
     }
 
-    public function recordPendingTransition($field, $from, $to, $when, $customProperties = [], $responsible = null) : PendingTransition
+    public function recordPendingTransition($field, $from, $to, $when, $customProperties = [], $responsible = null, $hookData = []) : PendingTransition
     {
         /** @var PendingTransition $pendingTransition */
         $pendingTransition = PendingTransition::make([
@@ -141,7 +141,8 @@ trait HasStateMachines
             'from' => $from,
             'to' => $to,
             'transition_at' => $when,
-            'custom_properties' => $customProperties
+            'custom_properties' => $customProperties,
+            'hook_data' => $hookData,
         ]);
 
         if ($responsible !== null) {

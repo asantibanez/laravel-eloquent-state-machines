@@ -91,10 +91,11 @@ abstract class StateMachine
      * @param $to
      * @param array $customProperties
      * @param null|mixed $responsible
+     * @param null|array $hookData
      * @throws TransitionNotAllowedException
      * @throws ValidationException
      */
-    public function transitionTo($from, $to, $customProperties = [], $responsible = null)
+    public function transitionTo($from, $to, $customProperties = [], $responsible = null, $hookData = [])
     {
         if ($to === $this->currentState()) {
             return;
@@ -112,8 +113,8 @@ abstract class StateMachine
         $beforeTransitionHooks = $this->beforeTransitionHooks()[$from] ?? [];
 
         collect($beforeTransitionHooks)
-            ->each(function ($callable) use ($to) {
-                $callable($to, $this->model);
+            ->each(function ($callable) use ($to, $customProperties, $responsible, $hookData) {
+                $callable($to, $this->model, $customProperties, $responsible, $hookData);
             });
 
         $field = $this->field;
@@ -132,8 +133,8 @@ abstract class StateMachine
         $afterTransitionHooks = $this->afterTransitionHooks()[$to] ?? [];
 
         collect($afterTransitionHooks)
-            ->each(function ($callable) use ($from) {
-                $callable($from, $this->model);
+            ->each(function ($callable) use ($from, $customProperties, $responsible, $hookData) {
+                $callable($from, $this->model, $customProperties, $responsible, $hookData);
             });
 
         $this->cancelAllPendingTransitions();
@@ -145,10 +146,11 @@ abstract class StateMachine
      * @param Carbon $when
      * @param array $customProperties
      * @param null $responsible
+     * @param null|array $hookData
      * @return null|PendingTransition
      * @throws TransitionNotAllowedException
      */
-    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
+    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [], $responsible = null, $hookData = []) : ?PendingTransition
     {
         if ($to === $this->currentState()) {
             return null;
@@ -166,7 +168,8 @@ abstract class StateMachine
             $to,
             $when,
             $customProperties,
-            $responsible
+            $responsible,
+            $hookData
         );
     }
 

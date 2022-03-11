@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $responsible_id
  * @property string $responsible_type
  * @property Model $responsible
+ * @property string $hook_data
  */
 class PendingTransition extends Model
 {
@@ -27,6 +28,7 @@ class PendingTransition extends Model
 
     protected $casts = [
         'custom_properties' => 'array',
+        'hook_data' => 'array',
     ];
 
     protected $dates = [
