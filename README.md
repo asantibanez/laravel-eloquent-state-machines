@@ -92,6 +92,12 @@ Next, you must export the package migrations
 php artisan vendor:publish --provider="Asantibanez\LaravelEloquentStateMachines\LaravelEloquentStateMachinesServiceProvider" --tag="migrations"
 ```
 
+Finally, prepare required database tables
+
+```bash
+php artisan migrate
+```
+
 
 ## Usage
 
