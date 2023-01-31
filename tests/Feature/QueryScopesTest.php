@@ -115,6 +115,35 @@ class QueryScopesTest extends TestCase
     }
 
     /** @test */
+    public function can_get_models_with_an_array_of_transition_to_states()
+    {
+        //Arrange
+        $salesOrder = factory(SalesOrder::class)->create();
+        $salesOrder->status()->transitionTo('approved');
+        $salesOrder->status()->transitionTo('processed');
+
+        $salesOrder2 = factory(SalesOrder::class)->create();
+        $salesOrder2->status()->transitionTo('waiting');
+        $salesOrder2->status()->transitionTo('cancelled');
+
+        $anotherSalesOrder = factory(SalesOrder::class)->create();
+        $anotherSalesOrder->status()->transitionTo('approved');
+
+        //Act
+        $salesOrders = SalesOrder::with([])
+            ->whereHasStatus(function ($query) {
+                $query->transitionedTo(['processed', 'cancelled']);
+            })
+            ->get();
+
+        //Assert
+        $this->assertEquals(2, $salesOrders->count());
+
+        $this->assertEquals($salesOrder->id, $salesOrders[0]->id);
+        $this->assertEquals($salesOrder2->id, $salesOrders[1]->id);
+    }
+
+    /** @test */
     public function can_get_models_with_specific_transition_from_state()
     {
         //Arrange
@@ -137,6 +166,35 @@ class QueryScopesTest extends TestCase
         $this->assertEquals(1, $salesOrders->count());
 
         $this->assertEquals($salesOrder->id, $salesOrders->first()->id);
+    }
+
+    /** @test */
+    public function can_get_models_with_an_array_of_transition_from_states()
+    {
+        //Arrange
+        $salesOrder = factory(SalesOrder::class)->create();
+        $salesOrder->status()->transitionTo('approved');
+        $salesOrder->status()->transitionTo('processed');
+
+        $anotherSalesOrder = factory(SalesOrder::class)->create();
+        $anotherSalesOrder->status()->transitionTo('approved');
+
+        $anotherSalesOrder2 = factory(SalesOrder::class)->create();
+        $anotherSalesOrder2->status()->transitionTo('waiting');
+        $anotherSalesOrder2->status()->transitionTo('cancelled');
+
+        //Act
+        $salesOrders = SalesOrder::with([])
+            ->whereHasStatus(function ($query) {
+                $query->transitionedFrom(['approved', 'waiting']);
+            })
+            ->get();
+
+        //Assert
+        $this->assertEquals(2, $salesOrders->count());
+
+        $this->assertEquals($salesOrder->id, $salesOrders[0]->id);
+        $this->assertEquals($anotherSalesOrder2->id, $salesOrders[1]->id);
     }
 
     /** @test */
