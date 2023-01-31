@@ -92,6 +92,12 @@ Next, you must export the package migrations
 php artisan vendor:publish --provider="Asantibanez\LaravelEloquentStateMachines\LaravelEloquentStateMachinesServiceProvider" --tag="migrations"
 ```
 
+Finally, prepare required database tables
+
+```bash
+php artisan migrate
+```
+
 
 ## Usage
 
@@ -378,6 +384,8 @@ This method must return a `Validator` that will be used to check the transition 
 the validator `fails()`, a `ValidationException` is thrown. Eg:
 
 ```php
+use Illuminate\Support\Facades\Validator as ValidatorFacade;
+
 class StatusStateMachine extends StateMachine
 {
     public function validatorForTransition($from, $to, $model): ?Validator
@@ -390,7 +398,7 @@ class StatusStateMachine extends StateMachine
             ]);
         }
         
-        return parent:validatorForTransition($from, $to, $model);
+        return parent::validatorForTransition($from, $to, $model);
     }
 }
 ```
