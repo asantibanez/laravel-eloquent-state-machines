@@ -100,8 +100,8 @@ abstract class StateMachine
             return;
         }
 
-        if (!$this->canBe($from, $to)) {
-            throw new TransitionNotAllowedException();
+        if (!$this->canBe($from, $to) && !$this->canBe($from, '*') && !$this->canBe('*', $to) && !$this->canBe('*', '*')) {
+            throw new TransitionNotAllowedException($from, $to, get_class($this->model));
         }
 
         $validator = $this->validatorForTransition($from, $to, $this->model);
@@ -155,7 +155,7 @@ abstract class StateMachine
         }
 
         if (!$this->canBe($from, $to)) {
-            throw new TransitionNotAllowedException();
+            throw new TransitionNotAllowedException($from, $to, get_class($this->model));
         }
 
         $responsible = $responsible ?? auth()->user();
