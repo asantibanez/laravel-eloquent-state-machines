@@ -1,10 +1,10 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
+namespace Ashraf\EloquentStateMachine\Tests\Feature;
 
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\BeforeTransitionJob;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
+use Ashraf\EloquentStateMachine\Tests\TestCase;
+use Ashraf\EloquentStateMachine\Tests\TestJobs\BeforeTransitionJob;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrderWithBeforeTransitionHook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Queue;

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders;
+namespace Ashraf\EloquentStateMachine\Tests\TestStateMachines\SalesOrders;
 
 
-use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\StartSalesOrderFulfillmentJob;
+use Ashraf\EloquentStateMachine\StateMachines\StateMachine;
+use Ashraf\EloquentStateMachine\Tests\TestJobs\StartSalesOrderFulfillmentJob;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Validator as ValidatorFacade;
 use Illuminate\Validation\Rule;

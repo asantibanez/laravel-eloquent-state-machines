@@ -1,13 +1,13 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Models;
+namespace Ashraf\EloquentStateMachine\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class StateHistory
- * @package Asantibanez\LaravelEloquentStateMachines\Models
+ * @package Ashraf\EloquentStateMachine\Models
  * @property string $field
  * @property string $from
  * @property string $to
@@ -105,8 +105,7 @@ class StateHistory extends Model
         if ($responsible instanceof Model) {
             return $query
                 ->where('responsible_id', $responsible->getKey())
-                ->where('responsible_type', get_class($responsible))
-            ;
+                ->where('responsible_type', get_class($responsible));
         }
 
         return $query->where('responsible_id', $responsible);

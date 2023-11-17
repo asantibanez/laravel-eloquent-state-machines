@@ -1,17 +1,22 @@
 {
-    "name": "asantibanez/laravel-eloquent-state-machines",
+    "name": "ahmedashraf093/better-eloquent-state-machine",
     "description": "State machines for your Laravel Eloquent models",
     "keywords": [
-        "asantibanez",
-        "laravel-eloquent-state-machines"
+        "ahmedashraf093",
+        "better-eloquent-state-machine"
     ],
-    "homepage": "https://github.com/asantibanez/laravel-eloquent-state-machines",
+    "homepage": "https://github.com/ahmedashraf093/better-eloquent-state-machine",
     "license": "MIT",
     "type": "library",
     "authors": [
         {
             "name": "Andrés Santibáñez",
             "email": "santibanez.andres@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Ahmed Ashraf",
+            "email": "ahmedashraf093@gmail.com",
             "role": "Developer"
         }
     ],
@@ -27,12 +32,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Asantibanez\\LaravelEloquentStateMachines\\": "src"
+            "Ashraf\\EloquentStateMachine\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Asantibanez\\LaravelEloquentStateMachines\\Tests\\": "tests"
+            "Ashraf\\EloquentStateMachine\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -45,7 +50,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Asantibanez\\LaravelEloquentStateMachines\\LaravelEloquentStateMachinesServiceProvider"
+                "Ashraf\\EloquentStateMachine\\LaravelEloquentStateMachinesServiceProvider"
             ]
         }
     }

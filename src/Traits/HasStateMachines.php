@@ -1,10 +1,9 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Traits;
+namespace Ashraf\EloquentStateMachine\Traits;
 
-use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
-use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
-use Asantibanez\LaravelEloquentStateMachines\StateMachines\State;
+use Ashraf\EloquentStateMachine\Models\StateHistory;
+use Ashraf\EloquentStateMachine\StateMachines\State;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -13,7 +12,7 @@ use Javoscript\MacroableModels\Facades\MacroableModels;
 
 /**
  * Trait HasStateMachines
- * @package Asantibanez\LaravelEloquentStateMachines\Traits
+ * @package Ashraf\EloquentStateMachine\Traits
  * @property array $stateMachines
  */
 trait HasStateMachines
@@ -82,7 +81,7 @@ trait HasStateMachines
         });
     }
 
-    public function getChangedAttributes() : array
+    public function getChangedAttributes(): array
     {
         return collect($this->getDirty())
             ->mapWithKeys(function ($_, $attribute) {
@@ -111,10 +110,6 @@ trait HasStateMachines
         return $this->morphMany(StateHistory::class, 'model');
     }
 
-    public function pendingTransitions()
-    {
-        return $this->morphMany(PendingTransition::class, 'model');
-    }
 
     public function recordState($field, $from, $to, $customProperties = [], $responsible = null, $changedAttributes = [])
     {
@@ -131,25 +126,5 @@ trait HasStateMachines
         }
 
         $this->stateHistory()->save($stateHistory);
-    }
-
-    public function recordPendingTransition($field, $from, $to, $when, $customProperties = [], $responsible = null) : PendingTransition
-    {
-        /** @var PendingTransition $pendingTransition */
-        $pendingTransition = PendingTransition::make([
-            'field' => $field,
-            'from' => $from,
-            'to' => $to,
-            'transition_at' => $when,
-            'custom_properties' => $customProperties
-        ]);
-
-        if ($responsible !== null) {
-            $pendingTransition->responsible()->associate($responsible);
-        }
-
-        $pendingTransition = $this->pendingTransitions()->save($pendingTransition);
-
-        return $pendingTransition;
     }
 }

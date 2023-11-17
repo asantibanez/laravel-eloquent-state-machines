@@ -1,10 +1,10 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
+namespace Ashraf\EloquentStateMachine\Tests\Feature;
 
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesManager;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrder;
+use Ashraf\EloquentStateMachine\Tests\TestCase;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesManager;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 
@@ -30,8 +30,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) use ($salesManager) {
                 $query->withResponsible($salesManager);
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(2, $salesOrders->count());
@@ -57,8 +56,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) use ($salesManager) {
                 $query->withResponsible($salesManager->id);
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(1, $salesOrders->count());
@@ -80,8 +78,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) {
                 $query->withTransition('approved', 'processed');
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(1, $salesOrders->count());
@@ -105,8 +102,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) {
                 $query->transitionedTo('processed');
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(1, $salesOrders->count());
@@ -159,8 +155,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) {
                 $query->transitionedFrom('approved');
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(1, $salesOrders->count());
@@ -212,8 +207,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) {
                 $query->withCustomProperty('comments', 'like', '%Check%');
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(1, $salesOrders->count());
@@ -242,8 +236,7 @@ class QueryScopesTest extends TestCase
             ->whereHasStatus(function ($query) {
                 $query->transitionedTo('processed');
             })
-            ->get()
-        ;
+            ->get();
 
         //Assert
         $this->assertEquals(1, $salesOrders->count());

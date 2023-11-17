@@ -89,7 +89,7 @@ composer require asantibanez/laravel-eloquent-state-machines
 Next, you must export the package migrations
 
 ```bash
-php artisan vendor:publish --provider="Asantibanez\LaravelEloquentStateMachines\LaravelEloquentStateMachinesServiceProvider" --tag="migrations"
+php artisan vendor:publish --provider="Ashraf\EloquentStateMachine\LaravelEloquentStateMachinesServiceProvider" --tag="migrations"
 ```
 
 Finally, prepare required database tables
@@ -119,7 +119,7 @@ After running the command, we will have a new StateMachine class created
 in the `App\StateMachines` directory. The class will have the following code.
 
 ```php
-use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
+use Ashraf\EloquentStateMachine\StateMachines\StateMachine;
 
 class StatusStateMachine extends StateMachine
 {
@@ -192,7 +192,7 @@ Once we have defined our StateMachine, we can register it in our `SalesOrder` mo
 attribute. Here, we set the bound model `field` and state machine class that will control it.
 
 ```php
-use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Ashraf\EloquentStateMachine\Traits\HasStateMachines;
 use App\StateMachines\StatusStateMachine;
 
 class SalesOrder extends Model
@@ -468,32 +468,6 @@ class StatusStateMachine extends StateMachine
 }
 ```
 
-### Postponing Transitions
-
-You can also postpone transitions to other states by using the `postponeTransitionTo` method.
-This method accepts the same parameters as `transitionTo` plus a `$when` Carbon instance to specify
-when the transition is to be run.
-
-`postponeTransitionTo` doesn't apply the transition immediately. Instead, it saves it
-into a `pending_transitions` table where it keeps track of all pending transitions for all
-models.
-
-To enable running this transitions at a later time, you must schedule the
-`PendingTransitionsDispatcher` job class into your scheduler to run every one, five or ten minutes.
-
-```php
-$schedule->job(PendingTransitionsDispatcher::class)->everyMinute();
-```
-
-`PendingTransitionsDispatcher` is responsible for applying the postponed transitions at the specified
-`$when` date/time.
-
-You can check if a model has pending transitions for a particular state machine using the
-`hasPendingTransitions()` method
-
-```php
-$salesOrder->status()->hasPendingTransitions();
-```
 
 ### Testing
 

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders;
+namespace Ashraf\EloquentStateMachine\Tests\TestStateMachines\SalesOrders;
 
 
-use Asantibanez\LaravelEloquentStateMachines\StateMachines\StateMachine;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\AfterTransitionJob;
+use Ashraf\EloquentStateMachine\StateMachines\StateMachine;
+use Ashraf\EloquentStateMachine\Tests\TestJobs\AfterTransitionJob;
 
 class StatusWithAfterTransitionHookStateMachine extends StateMachine
 {
@@ -31,11 +31,11 @@ class StatusWithAfterTransitionHookStateMachine extends StateMachine
     {
         return [
             'approved' => [
-                function($from, $model) {
+                function ($from, $model) {
                     $model->total = 200;
                     $model->save();
                 },
-                function($from, $model) {
+                function ($from, $model) {
                     $model->notes = 'after';
                     $model->save();
                 },

@@ -1,14 +1,13 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests;
+namespace Ashraf\EloquentStateMachine\Tests;
 
 use CreateSalesManagersTable;
-use CreatePendingTransitionsTable;
 use CreateSalesOrdersTable;
 use CreateStateHistoriesTable;
 use Javoscript\MacroableModels\MacroableModelsServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Asantibanez\LaravelEloquentStateMachines\LaravelEloquentStateMachinesServiceProvider;
+use Ashraf\EloquentStateMachine\LaravelEloquentStateMachinesServiceProvider;
 
 class TestCase extends BaseTestCase
 {
@@ -16,9 +15,9 @@ class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->withFactories(__DIR__.'/../database/factories');
+        $this->withFactories(__DIR__ . '/../database/factories');
 
-        $this->withFactories(__DIR__.'/database/factories');
+        $this->withFactories(__DIR__ . '/database/factories');
     }
 
     protected function getPackageProviders($app)
@@ -38,7 +37,6 @@ class TestCase extends BaseTestCase
         include_once __DIR__ . '/database/migrations/create_sales_managers_table.php';
 
         (new CreateStateHistoriesTable())->up();
-        (new CreatePendingTransitionsTable())->up();
         (new CreateSalesOrdersTable())->up();
         (new CreateSalesManagersTable())->up();
     }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\TestModels;
+namespace Ashraf\EloquentStateMachine\Tests\TestModels;
 
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders\StatusWithAfterTransitionHookStateMachine;
-use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Ashraf\EloquentStateMachine\Tests\TestStateMachines\SalesOrders\StatusWithAfterTransitionHookStateMachine;
+use Ashraf\EloquentStateMachine\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderWithAfterTransitionHook extends Model

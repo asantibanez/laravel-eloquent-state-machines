@@ -1,11 +1,11 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
+namespace Ashraf\EloquentStateMachine\Tests\Feature;
 
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithAnyToAny;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithFromAny;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrderWithToAny;
+use Ashraf\EloquentStateMachine\Tests\TestCase;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrderWithAnyToAny;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrderWithFromAny;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrderWithToAny;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Queue;

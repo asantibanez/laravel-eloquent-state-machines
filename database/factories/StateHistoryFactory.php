@@ -1,6 +1,6 @@
 <?php
 
-use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
+use Ashraf\EloquentStateMachine\Models\StateHistory;
 use Faker\Generator as Faker;
 
 $factory->define(StateHistory::class, function (Faker $faker) {

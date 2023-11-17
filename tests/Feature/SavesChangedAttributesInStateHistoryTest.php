@@ -1,10 +1,10 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
+namespace Ashraf\EloquentStateMachine\Tests\Feature;
 
-use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrder;
+use Ashraf\EloquentStateMachine\Models\StateHistory;
+use Ashraf\EloquentStateMachine\Tests\TestCase;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 

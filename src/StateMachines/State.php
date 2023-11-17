@@ -1,16 +1,13 @@
 <?php
 
 
-namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
+namespace Ashraf\EloquentStateMachine\StateMachines;
 
-use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
-use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
-use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
 use Carbon\Carbon;
 
 /**
  * Class State
- * @package Asantibanez\LaravelEloquentStateMachines\StateMachines
+ * @package Ashraf\EloquentStateMachine\StateMachines
  * @property string $state
  * @property StateMachine $stateMachine
  */
@@ -80,15 +77,7 @@ class State
         return $this->stateMachine->canBe($from = $this->state, $to = $state);
     }
 
-    public function pendingTransitions()
-    {
-        return $this->stateMachine->pendingTransitions();
-    }
 
-    public function hasPendingTransitions()
-    {
-        return $this->stateMachine->hasPendingTransitions();
-    }
 
     public function transitionTo($state, $customProperties = [], $responsible = null)
     {
@@ -100,26 +89,9 @@ class State
         );
     }
 
-    /**
-     * @param $state
-     * @param Carbon $when
-     * @param array $customProperties
-     * @param null $responsible
-     * @return null|PendingTransition
-     * @throws TransitionNotAllowedException
-     */
-    public function postponeTransitionTo($state, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
-    {
-        return $this->stateMachine->postponeTransitionTo(
-            $from = $this->state,
-            $to = $state,
-            $when,
-            $customProperties,
-            $responsible
-        );
-    }
 
-    public function latest() : ?StateHistory
+
+    public function latest(): ?StateHistory
     {
         return $this->snapshotWhen($this->state);
     }

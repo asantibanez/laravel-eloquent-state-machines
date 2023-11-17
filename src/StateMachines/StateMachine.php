@@ -1,12 +1,11 @@
 <?php
 
 
-namespace Asantibanez\LaravelEloquentStateMachines\StateMachines;
+namespace Ashraf\EloquentStateMachine\StateMachines;
 
 
-use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
-use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
-use Asantibanez\LaravelEloquentStateMachines\Models\StateHistory;
+use Ashraf\EloquentStateMachine\Exceptions\TransitionNotAllowedException;
+use Ashraf\EloquentStateMachine\Models\StateHistory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Model;
@@ -48,7 +47,7 @@ abstract class StateMachine
         return $this->history()->to($state)->count();
     }
 
-    public function whenWas($state) : ?Carbon
+    public function whenWas($state): ?Carbon
     {
         $stateHistory = $this->snapshotWhen($state);
 
@@ -59,12 +58,12 @@ abstract class StateMachine
         return $stateHistory->created_at;
     }
 
-    public function snapshotWhen($state) : ?StateHistory
+    public function snapshotWhen($state): ?StateHistory
     {
         return $this->history()->to($state)->latest('id')->first();
     }
 
-    public function snapshotsWhen($state) : Collection
+    public function snapshotsWhen($state): Collection
     {
         return $this->history()->to($state)->get();
     }
@@ -76,15 +75,6 @@ abstract class StateMachine
         return collect($availableTransitions)->contains($to);
     }
 
-    public function pendingTransitions()
-    {
-        return $this->model->pendingTransitions()->forField($this->field);
-    }
-
-    public function hasPendingTransitions()
-    {
-        return $this->pendingTransitions()->notApplied()->exists();
-    }
 
     /**
      * @param $from
@@ -135,63 +125,27 @@ abstract class StateMachine
             ->each(function ($callable) use ($from) {
                 $callable($from, $this->model);
             });
-
-        $this->cancelAllPendingTransitions();
     }
 
-    /**
-     * @param $from
-     * @param $to
-     * @param Carbon $when
-     * @param array $customProperties
-     * @param null $responsible
-     * @return null|PendingTransition
-     * @throws TransitionNotAllowedException
-     */
-    public function postponeTransitionTo($from, $to, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
-    {
-        if ($to === $this->currentState()) {
-            return null;
-        }
 
-        if (!$this->canBe($from, $to)) {
-            throw new TransitionNotAllowedException($from, $to, get_class($this->model));
-        }
+    abstract public function transitions(): array;
 
-        $responsible = $responsible ?? auth()->user();
+    abstract public function defaultState(): ?string;
 
-        return $this->model->recordPendingTransition(
-            $this->field,
-            $from,
-            $to,
-            $when,
-            $customProperties,
-            $responsible
-        );
-    }
-
-    public function cancelAllPendingTransitions()
-    {
-        $this->pendingTransitions()->delete();
-    }
-
-    abstract public function transitions() : array;
-
-    abstract public function defaultState() : ?string;
-
-    abstract public function recordHistory() : bool;
+    abstract public function recordHistory(): bool;
 
     public function validatorForTransition($from, $to, $model): ?Validator
     {
         return null;
     }
 
-    public function afterTransitionHooks() : array
+    public function afterTransitionHooks(): array
     {
         return [];
     }
 
-    public function beforeTransitionHooks() : array {
+    public function beforeTransitionHooks(): array
+    {
         return [];
     }
 }

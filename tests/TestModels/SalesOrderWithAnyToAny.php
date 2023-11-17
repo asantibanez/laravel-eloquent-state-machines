@@ -1,9 +1,9 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\TestModels;
+namespace Ashraf\EloquentStateMachine\Tests\TestModels;
 
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders\StatusAnyToAnyStateMachine;
-use Asantibanez\LaravelEloquentStateMachines\Traits\HasStateMachines;
+use Ashraf\EloquentStateMachine\Tests\TestStateMachines\SalesOrders\StatusAnyToAnyStateMachine;
+use Ashraf\EloquentStateMachine\Traits\HasStateMachines;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderWithAnyToAny extends Model

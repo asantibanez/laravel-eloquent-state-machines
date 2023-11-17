@@ -1,15 +1,14 @@
 <?php
 
-namespace Asantibanez\LaravelEloquentStateMachines\Tests\Feature;
+namespace Ashraf\EloquentStateMachine\Tests\Feature;
 
-use Asantibanez\LaravelEloquentStateMachines\Exceptions\TransitionNotAllowedException;
-use Asantibanez\LaravelEloquentStateMachines\Models\PendingTransition;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestCase;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestJobs\StartSalesOrderFulfillmentJob;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesManager;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestModels\SalesOrder;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders\FulfillmentStateMachine;
-use Asantibanez\LaravelEloquentStateMachines\Tests\TestStateMachines\SalesOrders\StatusStateMachine;
+use Ashraf\EloquentStateMachine\Exceptions\TransitionNotAllowedException;
+use Ashraf\EloquentStateMachine\Tests\TestCase;
+use Ashraf\EloquentStateMachine\Tests\TestJobs\StartSalesOrderFulfillmentJob;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesManager;
+use Ashraf\EloquentStateMachine\Tests\TestModels\SalesOrder;
+use Ashraf\EloquentStateMachine\Tests\TestStateMachines\SalesOrders\FulfillmentStateMachine;
+use Ashraf\EloquentStateMachine\Tests\TestStateMachines\SalesOrders\StatusStateMachine;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -324,104 +323,6 @@ class HasStateMachinesTest extends TestCase
 
         $this->assertFalse($salesOrder->status()->was('another_status'));
         $this->assertEquals(0, $salesOrder->status()->was('another_status'));
-    }
-
-    /** @test */
-    public function can_record_pending_transition()
-    {
-        //Arrange
-        $salesOrder = factory(SalesOrder::class)->create();
-
-        $salesManager = factory(SalesManager::class)->create();
-
-        //Act
-        $customProperties = [
-            'comments' => $this->faker->sentence,
-        ];
-
-        $responsible = $salesManager;
-
-        $pendingTransition = $salesOrder->status()->postponeTransitionTo(
-            'approved',
-            Carbon::tomorrow()->startOfDay(),
-            $customProperties,
-            $responsible
-        );
-
-        //Assert
-        $this->assertNotNull($pendingTransition);
-
-        $salesOrder->refresh();
-
-        $this->assertTrue($salesOrder->status()->is('pending'));
-
-        $this->assertTrue($salesOrder->status()->hasPendingTransitions());
-
-        /** @var PendingTransition $pendingTransition */
-        $pendingTransition = $salesOrder->status()->pendingTransitions()->first();
-
-        $this->assertEquals('status', $pendingTransition->field);
-        $this->assertEquals('pending', $pendingTransition->from);
-        $this->assertEquals('approved', $pendingTransition->to);
-
-        $this->assertEquals(Carbon::tomorrow()->startOfDay(), $pendingTransition->transition_at);
-
-        $this->assertEquals($customProperties, $pendingTransition->custom_properties);
-
-        $this->assertNull($pendingTransition->applied_at);
-
-        $this->assertEquals($salesOrder->id, $pendingTransition->model->id);
-
-        $this->assertEquals($salesManager->id, $pendingTransition->responsible->id);
-    }
-
-    /** @test */
-    public function should_not_record_pending_transition_for_same_state()
-    {
-        //Arrange
-        $salesOrder = factory(SalesOrder::class)->create();
-
-        $this->assertTrue($salesOrder->status()->is('pending'));
-
-        //Act
-        $pendingTransition = $salesOrder->status()->postponeTransitionTo(
-            'pending',
-            Carbon::tomorrow()->startOfDay()
-        );
-
-        //Assert
-        $this->assertNull($pendingTransition);
-    }
-
-    /** @test */
-    public function should_cancel_all_pending_transitions_when_transitioning_to_next_state()
-    {
-        //Arrange
-        $salesOrder = factory(SalesOrder::class)->create();
-
-        factory(PendingTransition::class)->times(5)->create([
-            'field' => 'status',
-            'model_id' => $salesOrder->id,
-            'model_type' => SalesOrder::class,
-        ]);
-
-        factory(PendingTransition::class)->times(5)->create([
-            'field' => 'fulfillment',
-            'model_id' => $salesOrder->id,
-            'model_type' => SalesOrder::class,
-        ]);
-
-        $this->assertTrue($salesOrder->status()->hasPendingTransitions());
-        $this->assertTrue($salesOrder->fulfillment()->hasPendingTransitions());
-
-        //Act
-        $salesOrder->status()->transitionTo('approved');
-
-        //Assert
-        $salesOrder->refresh();
-
-        $this->assertFalse($salesOrder->status()->hasPendingTransitions());
-        $this->assertTrue($salesOrder->fulfillment()->hasPendingTransitions());
     }
 
     /** @test */
