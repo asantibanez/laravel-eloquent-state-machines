@@ -31,7 +31,6 @@ class TestCase extends BaseTestCase
     protected function getEnvironmentSetUp($app)
     {
         include_once __DIR__ . '/../database/migrations/create_state_histories_table.php.stub';
-        include_once __DIR__ . '/../database/migrations/create_pending_transitions_table.php.stub';
 
         include_once __DIR__ . '/database/migrations/create_sales_orders_table.php';
         include_once __DIR__ . '/database/migrations/create_sales_managers_table.php';

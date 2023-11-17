@@ -3,6 +3,7 @@
 
 namespace Ashraf\EloquentStateMachine\StateMachines;
 
+use Ashraf\EloquentStateMachine\Models\StateHistory;
 use Carbon\Carbon;
 
 /**
@@ -79,7 +80,7 @@ class State
 
 
 
-    public function transitionTo($state, $customProperties = [], $responsible = null)
+    public function transitionTo(string $state, mixed $customProperties = [], mixed $responsible = null)
     {
         $this->stateMachine->transitionTo(
             $from = $this->state,

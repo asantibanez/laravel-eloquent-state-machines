@@ -1,6 +1,10 @@
 # Changelog
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
+## v6.0.0 - 2023-11-17
+- Removed all the pending transition logic (***Breaking Change***)
+- Introduced new Closure function validation for transition hooks. By @ahmedashraf093
+- Added `->availableTransitions()` method to get all available transitions for `responsible` for a `model`. By @ahmedashraf093
 
 ## v5.1.0 - 2022-02-17
 

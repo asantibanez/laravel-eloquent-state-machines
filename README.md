@@ -1,20 +1,15 @@
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/asantibanez/laravel-eloquent-state-machines)
-[![Total Downloads](https://img.shields.io/packagist/dt/asantibanez/laravel-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/asantibanez/laravel-eloquent-state-machines)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ahmedashraf093/better-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/ahmedashraf093/better-eloquent-state-machine)
+[![Total Downloads](https://img.shields.io/packagist/dt/ahmedashraf093/better-eloquent-state-machines.svg?style=flat-square)](https://packagist.org/packages/ahmedashraf093/better-eloquent-state-machine)
 
-![Laravel Eloquent State Machines](https://banners.beyondco.de/Laravel%20Eloquent%20State%20Machines.png?theme=light&packageManager=composer+require&packageName=asantibanez%2Flaravel-eloquent-state-machines&pattern=circuitBoard&style=style_1&description=State+machines+for+your+Laravel+Eloquent+models+in+no+time&md=1&showWatermark=1&fontSize=100px&images=collection)
+![Eloquent State Machine](https://banners.beyondco.de/Eloquent%20State%20Machine.jpeg?theme=dark&packageManager=composer+require&packageName=ahmedashraf093%2Flaravel-eloquent-state-machines&pattern=circuitBoard&style=style_2&description=A+better+state+machine+for+your+eloquent+models+with+states&md=1&showWatermark=1&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg)
+
 
 ## Introduction
 
-This package allows you to simplify the transitioning of states an Eloquent model could have by
-defining the transition logic in specific StateMachine classes. Each class allows you to register
-validations, hooks and allowed transitions and states making each StateMachine class the only source
-of truth when moving from a state to the next.
+This package provides a very simple and easy API to reliably manage your state machines withing your eloquent models all in one file. using a simple one liners to do all the validation, logging and execution of your state transitions.
 
-Laravel Eloquent State Machines also allow you to automatically record history of all states a model
-may have and query this history to take specific actions accordingly.
+> based on the work of [asantibanez](https://github.com/asantibanez)'s state machine [laravel-eloquent-state-machines](https://github.com/asantibanez/laravel-eloquent-state-machines)
 
-At its core, this package has been created to provide a simple but powerful API so Laravel developers
-feel right at home.
 
 **Examples**
 
@@ -40,6 +35,9 @@ $salesOrder->status()->transitionTo('approved', [
 
 //With responsible
 $salesOrder->status()->transitionTo('approved', [], $responsible); // auth()->user() by default
+
+# php named args example
+$salesOrder->status()->transitionTo(to: 'approved', responsible: auth()->user())
 ```
 
 Checking available transitions
@@ -72,18 +70,31 @@ $salesOrder->fulfillment()->snapshowWhen('completed');
 $salesOrder->status()->history()->get();
 ```
 
-## Demo
 
-You can check a demo and examples [here](https://github.com/asantibanez/laravel-eloquent-state-machines-demo)
+## Features
 
-![demo](https://github.com/asantibanez/laravel-eloquent-state-machines/raw/master/demo.gif)
+- Define your state machines in a single file
+- Define your state machines with states and allowed transitions
+- Allow wildcards to allow any state change
+- Allow custom properties to be saved with each transition
+- Allow responsible to be saved with each transition
+- Allow to record history of state transitions
+- Allow to query models based on state transitions
+- Allow to validate state transitions
+- Allow to add hooks/callbacks before/after state transitions
+
+<!-- ## Demo
+
+You can check a demo and examples [here](https://github.com/ahmedashraf093/better-eloquent-state-machines-demo)
+
+![demo](https://github.com/ahmedashraf093/better-eloquent-state-machines/raw/master/demo.gif) -->
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require asantibanez/laravel-eloquent-state-machines
+composer require ahmedashraf093/better-eloquent-state-machines
 ```
 
 Next, you must export the package migrations
@@ -148,8 +159,13 @@ Inside this class, we can define our states and allowed transitions
 public function transitions(): array
 {
     return [
-        'pending' => ['approved', 'declined'],
-        'approved' => ['processed'],
+        'pending' => [
+            'approved' => fn($model, $who): bool => true, 
+            'declined' => fn($model, $who): bool => $who->getTable() === User::tableName(), // only allow users to decline
+        ],
+        'approved' => [
+            'processed' // no need for extra validation
+        ],
     ];
 }
 ```
@@ -199,6 +215,9 @@ class SalesOrder extends Model
 {
     Use HasStateMachines;
 
+    /**
+     *  mark the `status` to be controlled by `StatusStateMachine`
+     */
     public $stateMachines = [
         'status' => StatusStateMachine::class
     ];
@@ -234,12 +253,25 @@ To transition from one state to another, we can use the `transitionTo` method. E
 ```php
 $salesOrder->status()->transitionTo($to = 'approved');
 ```
+```php
+# PHP8 named args
+$salesOrder->status()->transitionTo(to: 'approved');
+```
 
 You can also pass in `$customProperties` if needed
 ```php
 $salesOrder->status()->transitionTo($to = 'approved', $customProperties = [
     'comments' => 'All ready to go'
 ]);
+```
+```php
+# PHP8 named args
+$salesOrder->status()->transitionTo(
+    to: 'approved', 
+    customProperties: [
+        'comments' => 'All ready to go'
+    ]
+);
 ```
 
 A `$responsible` can be also specified. By default, `auth()->user()` will be used
@@ -250,9 +282,16 @@ $salesOrder->status()->transitionTo(
     $responsible = User::first()
 );
 ```
+```php
+# PHP8 named args
+$salesOrder->status()->transitionTo(
+    to: 'approved',
+    responsible: User::first()
+);
+```
 
 When applying the transition, the state machine will verify if the state transition is allowed according
-to the `transitions()` states we've defined. If the transition is not allowed, a `TransitionNotAllowed`
+to the `transitions()` states we've defined. If the transition is not allowed, a `Ashraf\EloquentStateMachine\Exceptions\TransitionNotAllowed`
 exception will be thrown.
 
 ### Querying History
@@ -392,34 +431,64 @@ $salesOrder->changedAttributeNewValue('total'); // 200
 
 ### Adding Validations
 
-Before transitioning to a new state, we can add validations that will allow/disallow the transition. To
-do so, we can override the `validatorForTransition($from, $to, $model)` method in our state machine class.
+#### Using closure functions
 
-This method must return a `Validator` that will be used to check the transition before applying it. If
-the validator `fails()`, a `ValidationException` is thrown. Eg:
+Using closure function to do per state validation before transitioning to the next state.
 
+here is an example of a state machine that allows any user to approve a sales order but only users can decline it.
 ```php
-use Illuminate\Support\Facades\Validator as ValidatorFacade;
-
-class StatusStateMachine extends StateMachine
+public function transitions(): array
 {
-    public function validatorForTransition($from, $to, $model): ?Validator
-    {
-        if ($from === 'pending' && $to === 'approved') {
-            return ValidatorFacade::make([
-                'total' => $model->total,
-            ], [
-                'total' => 'gt:0',
-            ]);
-        }
-        
-        return parent::validatorForTransition($from, $to, $model);
-    }
+    return [
+        'pending' => [
+            'approved' => fn($model, $who): bool => true, 
+            'declined' => fn($model, $who): bool => $who->getTable() === User::tableName(), // only allow users to decline
+            #             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ],
+        'approved' => [
+            'processed' // no need for extra validation
+        ],
+    ];
+}
+```
+the arrow function 
+```php 
+fn($model, $who): bool => $who->getTable() === User::tableName()
+``` 
+will be called before transitioning to the next state and will be passed the model and the responsible for the transition. the `bool` value returned by the function will determine if the transition will be allowed or not.
+
+a more complex example would be to allow only users with a specific role to approve a sales order.
+```php
+public function transitions(): array
+{
+    return [
+        'pending' => [
+            'approved' => fn($model, $who): bool => $who->hasRole('sales_manager') && $who->can('approve', $model),
+            'declined' => fn($model, $who): bool => $who->getTable() === User::tableName(), // only allow users to decline
+        ],
+        'approved' => [
+            'processed' // no need for extra validation
+        ],
+    ];
 }
 ```
 
-In the example above, we are validating that our Sales Order model total is greater than 0 before
-applying the transition.
+
+### Get available transitions
+
+using the `->availableTransitions()` method you can get all the available transitions from the current state with all validation applied.
+
+```php
+$salesOrder->status()->availableTransitions(); // ['approved', 'declined']
+```
+
+different validations can be applied to the same transition depending on the responsible for the transition.
+
+```php
+$user = User::first();
+$salesOrder->status()->availableTransitions($user); // ['approved']
+```
+
 
 ### Adding Hooks
 
@@ -431,6 +500,7 @@ Both transition hooks methods must return a keyed array with the state as key, a
 to be executed.
 
 > NOTE: The keys for beforeTransitionHooks() must be the `$from` states.
+
 > NOTE: The keys for afterTransitionHooks() must be the `$to` states.
 
 Example
@@ -485,10 +555,10 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Security
 
-If you discover any security related issues, please email santibanez.andres@gmail.com instead of using the issue tracker.
+If you discover any security related issues, please email ahmedashraaf093+ghissues@gmail.com instead of using the issue tracker.
 
 ## Credits
-
+- [Ahmed Ashraf](https://github.com/ahmedashraf093)
 - [Andrés Santibáñez](https://github.com/asantibanez)
 - [All Contributors](../../contributors)
 

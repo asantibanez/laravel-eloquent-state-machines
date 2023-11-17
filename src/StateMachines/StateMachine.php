@@ -8,10 +8,9 @@ use Ashraf\EloquentStateMachine\Exceptions\TransitionNotAllowedException;
 use Ashraf\EloquentStateMachine\Models\StateHistory;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 abstract class StateMachine
 {
@@ -68,13 +67,35 @@ abstract class StateMachine
         return $this->history()->to($state)->get();
     }
 
-    public function canBe($from, $to)
+
+    /**
+     * check if the model can be transitioned from $from to $to
+     * 
+     * @param string $from
+     * @param string $to
+     * @param null|mixed $who
+     */
+    public function canBe($from, $to, $who = null): bool
     {
         $availableTransitions = $this->transitions()[$from] ?? [];
 
-        return collect($availableTransitions)->contains($to);
+        return collect(array_keys($availableTransitions))->contains($to)
+            && $this->executeTransitionValidation($from, $to, $who);
     }
 
+    /**
+     * Execute the transition validation callback if exists
+     * 
+     * @param $from
+     * @param $to
+     * @param null|mixed $who
+     * @return bool
+     */
+    public function executeTransitionValidation($from, $to, $who = null): bool
+    {
+        $target = $this->transitions()[$from][$to];
+        return is_callable($target) ? $target($this->model, $who) : true;
+    }
 
     /**
      * @param $from
@@ -82,7 +103,7 @@ abstract class StateMachine
      * @param array $customProperties
      * @param null|mixed $responsible
      * @throws TransitionNotAllowedException
-     * @throws ValidationException
+     * @throws \League\Config\Exception\ValidationException
      */
     public function transitionTo($from, $to, $customProperties = [], $responsible = null)
     {
@@ -90,7 +111,16 @@ abstract class StateMachine
             return;
         }
 
-        if (!$this->canBe($from, $to) && !$this->canBe($from, '*') && !$this->canBe('*', $to) && !$this->canBe('*', '*')) {
+        $responsible = $responsible ?? auth()->user();
+
+
+
+        if (
+            !$this->canBe($from, $to, $responsible)
+            && !$this->canBe($from, '*', $responsible)
+            && !$this->canBe('*', $to, $responsible)
+            && !$this->canBe('*', '*', $responsible)
+        ) {
             throw new TransitionNotAllowedException($from, $to, get_class($this->model));
         }
 
@@ -99,29 +129,25 @@ abstract class StateMachine
             throw new ValidationException($validator);
         }
 
-        $beforeTransitionHooks = $this->beforeTransitionHooks()[$from] ?? [];
 
-        collect($beforeTransitionHooks)
+        collect($this->beforeTransitionHooks()[$from] ?? [])
             ->each(function ($callable) use ($to) {
                 $callable($to, $this->model);
             });
 
+
+        // save changes
         $field = $this->field;
         $this->model->$field = $to;
-
         $changedAttributes = $this->model->getChangedAttributes();
-
         $this->model->save();
 
         if ($this->recordHistory()) {
-            $responsible = $responsible ?? auth()->user();
-
             $this->model->recordState($field, $from, $to, $customProperties, $responsible, $changedAttributes);
         }
 
-        $afterTransitionHooks = $this->afterTransitionHooks()[$to] ?? [];
 
-        collect($afterTransitionHooks)
+        collect($this->afterTransitionHooks()[$to] ?? [])
             ->each(function ($callable) use ($from) {
                 $callable($from, $this->model);
             });
@@ -147,5 +173,27 @@ abstract class StateMachine
     public function beforeTransitionHooks(): array
     {
         return [];
+    }
+
+
+    /**
+     * @param null|Authenticatable $responsible
+     * @return array<string>
+     */
+    public function availableTransitions($responsible = null): array
+    {
+        $currentState = $this->currentState();
+
+        $availableTransitions = $this->transitions()[$currentState] ?? [];
+
+        return collect($availableTransitions)
+            ->map(function ($target, $transition) use ($currentState, $responsible) {
+                return [
+                    'transition' => $transition,
+                    'target' => $target,
+                    'can' => $this->canBe($currentState, $transition, $responsible ?? auth()->user()),
+                ];
+            })
+            ->filter(fn ($status) => $status['can'])->keys()->toArray();
     }
 }
