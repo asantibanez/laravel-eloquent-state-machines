@@ -67,7 +67,7 @@ $salesOrder->status()->timesWas('approved');
 
 $salesOrder->status()->whenWas('approved');
 
-$salesOrder->fulfillment()->snapshowWhen('completed');
+$salesOrder->fulfillment()->snapshotWhen('completed');
 
 $salesOrder->status()->history()->get();
 ```
