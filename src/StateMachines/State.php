@@ -27,7 +27,7 @@ class State
 
     public function state()
     {
-        return $this->state;
+        return $this->normalizeCasting($this->state);
     }
 
     public function stateMachine()
@@ -37,7 +37,7 @@ class State
 
     public function is($state)
     {
-        return $this->state === $state;
+        return $this->state() === $this->normalizeCasting($state);
     }
 
     public function isNot($state)
@@ -77,7 +77,7 @@ class State
 
     public function canBe($state)
     {
-        return $this->stateMachine->canBe($from = $this->state, $to = $state);
+        return $this->stateMachine->canBe($from = $this->state(), $to = $this->normalizeCasting($state));
     }
 
     public function pendingTransitions()
@@ -90,11 +90,16 @@ class State
         return $this->stateMachine->hasPendingTransitions();
     }
 
+    public function normalizeCasting($state)
+    {
+        return $this->stateMachine->normalizeCasting($state);
+    }
+
     public function transitionTo($state, $customProperties = [], $responsible = null)
     {
         $this->stateMachine->transitionTo(
-            $from = $this->state,
-            $to = $state,
+            $from = $this->state(),
+            $to = $this->normalizeCasting($state),
             $customProperties,
             $responsible
         );
@@ -111,8 +116,8 @@ class State
     public function postponeTransitionTo($state, Carbon $when, $customProperties = [], $responsible = null) : ?PendingTransition
     {
         return $this->stateMachine->postponeTransitionTo(
-            $from = $this->state,
-            $to = $state,
+            $from = $this->state(),
+            $to = $this->normalizeCasting($state),
             $when,
             $customProperties,
             $responsible
@@ -121,7 +126,7 @@ class State
 
     public function latest() : ?StateHistory
     {
-        return $this->snapshotWhen($this->state);
+        return $this->snapshotWhen($this->state());
     }
 
     public function getCustomProperty($key)
