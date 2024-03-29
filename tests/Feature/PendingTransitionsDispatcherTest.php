@@ -41,7 +41,7 @@ class PendingTransitionsDispatcherTest extends TestCase
         $this->assertTrue($salesOrder->status()->hasPendingTransitions());
 
         //Act
-        PendingTransitionsDispatcher::dispatchNow();
+        (new PendingTransitionsDispatcher)->handle();
 
         //Assert
         $salesOrder->refresh();
@@ -65,7 +65,7 @@ class PendingTransitionsDispatcherTest extends TestCase
         $this->assertTrue($salesOrder->status()->hasPendingTransitions());
 
         //Act
-        PendingTransitionsDispatcher::dispatchNow();
+        (new PendingTransitionsDispatcher)->handle();
 
         //Assert
         $salesOrder->refresh();
