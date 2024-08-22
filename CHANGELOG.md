@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-eloquent-state-machines` will be documented in this file
 
+## v6.0.0 - 2024-08-22
+* Laravel 11.x Compatibility
+
+## v5.2.0 - 2023-01-31
+* Laravel 10.x Compatibility by @laravel-shift in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/38
+* Several updates and typo fix in Readme by @ajaxray in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/37
+* Added data to the transition exception by @jezzdk in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/30
+* Added ability to use wildcard in allowed state changes by @jezzdk in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/28
+* Added support for arrays in transition query methods by @jezzdk in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/27
+
 ## v5.1.0 - 2022-02-17
 
 - Added support for Laravel 9. By @leohubert in https://github.com/asantibanez/laravel-eloquent-state-machines/pull/32
