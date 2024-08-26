@@ -72,7 +72,9 @@ abstract class StateMachine
     {
         $availableTransitions = $this->transitions()[$from] ?? [];
 
-        return collect($availableTransitions)->map(fn ($state) => $this->normalizeCasting($state))->contains($to);
+        return collect($availableTransitions)->map(function ($state) {
+            return $this->normalizeCasting($state);
+        })->contains($to);
     }
 
     public function pendingTransitions()
