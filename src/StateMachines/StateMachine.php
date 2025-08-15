@@ -71,9 +71,12 @@ abstract class StateMachine
 
     public function canBe($from, $to)
     {
-        $availableTransitions = $this->transitions()[$from] ?? [];
-
-        return collect($availableTransitions)->contains($to);
+        $transitions = $this->transitions();
+        return collect($transitions[$from] ?? [])
+            ->merge(collect($transitions['*'] ?? []))
+            ->contains(function ($transition) use ($to) {
+                return $transition === $to || $transition === '*';
+            });
     }
 
     public function pendingTransitions()
@@ -100,7 +103,7 @@ abstract class StateMachine
             return;
         }
 
-        if (!$this->canBe($from, $to) && !$this->canBe($from, '*') && !$this->canBe('*', $to) && !$this->canBe('*', '*')) {
+        if (!$this->canBe($from, $to)) {
             throw new TransitionNotAllowedException($from, $to, get_class($this->model));
         }
 
